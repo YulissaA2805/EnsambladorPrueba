@@ -30,9 +30,11 @@ namespace EnsambladorPrueba
 
             public string numeroElementos { get; set; }
 
+            public string vectorString { get; set; }
+
             public override string ToString()
             {
-                return "Nombre: " + Nombre + "   Direccion: " + Direccion + "   Tipo: " + Tipo + "   Numero de elementos: " + numeroElementos;
+                return "Nombre: " + Nombre + "   Direccion: " + Direccion + "   Tipo: " + Tipo + "   Numero de elementos: " + numeroElementos + "   VS: " + vectorString;
             }
         }
 
@@ -189,25 +191,97 @@ namespace EnsambladorPrueba
                 {
                     switch (palabras_linea[j])
                     {
+                        case "NOP":
+                            bw.Write((byte)instrucciones["NOP"].Codigo);//1 byte
+                            tam_seg_cod++;
+                            dir++;
+                            break;
                         case "DEFI":
                             variables.Add(palabras_linea[1], tam_seg_dat);//la siguiente palabra debe ser una variable
-                            tabla_var.Add(new Variable() { Nombre = palabras_linea[1], Direccion = tam_seg_dat, Tipo = tipoVariable[0], numeroElementos = "1" });
+                            tabla_var.Add(new Variable() { Nombre = palabras_linea[1], Direccion = tam_seg_dat, Tipo = tipoVariable[0], numeroElementos = "0", vectorString = "X" });
 
                             tam_seg_dat += 4;//una variable int ocupa 4 bytes
                             
+                            break;
+                        case "DEFD":
+                            variables.Add(palabras_linea[1], tam_seg_dat);//la siguiente palabra debe ser una variable
+                            tabla_var.Add(new Variable() { Nombre = palabras_linea[1], Direccion = tam_seg_dat, Tipo = tipoVariable[1], numeroElementos = "0", vectorString = "X" });
+
+                            tam_seg_dat += 8;//una variable double ocupa 8 bytes
+
+                            break;
+                        case "DEFS":
+                            variables.Add(palabras_linea[1], tam_seg_dat);//la siguiente palabra debe ser una variable
+                            tabla_var.Add(new Variable() { Nombre = palabras_linea[1], Direccion = tam_seg_dat, Tipo = tipoVariable[2], numeroElementos = "0", vectorString = tam_vs.ToString() });
+
+                            tam_vs += 1;
+                            tam_seg_dat += 2;//una variable string ocupa 2 bytes
+
                             break;
                         case "DEFAI":
                             var variables_defai = palabras_linea[1].Split(',');//se divide en nombre y #
                             variables.Add(variables_defai[0], tam_seg_dat);
                             int numero = Int32.Parse(variables_defai[1]);
 
-                            tabla_var.Add(new Variable() { Nombre = variables_defai[0], Direccion = tam_seg_dat, Tipo = tipoVariable[10], numeroElementos = numero.ToString() });
+                            tabla_var.Add(new Variable() { Nombre = variables_defai[0], Direccion = tam_seg_dat, Tipo = tipoVariable[10], numeroElementos = numero.ToString(), vectorString = "X" });
 
                             for (var k=0; k<numero; k++)
                             {
                                 tam_seg_dat += 4;
                             }
                             
+                            break;
+                        case "DEFAD":
+                            variables_defai = palabras_linea[1].Split(',');//se divide en nombre y #
+                            variables.Add(variables_defai[0], tam_seg_dat);
+                            numero = Int32.Parse(variables_defai[1]);
+
+                            tabla_var.Add(new Variable() { Nombre = variables_defai[0], Direccion = tam_seg_dat, Tipo = tipoVariable[11], numeroElementos = numero.ToString(), vectorString = "X" });
+
+                            for (var k = 0; k < numero; k++)
+                            {
+                                tam_seg_dat += 8;
+                            }
+
+                            break;
+                        case "DEFAS":
+                            variables_defai = palabras_linea[1].Split(',');//se divide en nombre y #
+                            variables.Add(variables_defai[0], tam_seg_dat);
+                            numero = Int32.Parse(variables_defai[1]);
+
+                            tabla_var.Add(new Variable() { Nombre = variables_defai[0], Direccion = tam_seg_dat, Tipo = tipoVariable[12], numeroElementos = numero.ToString(), vectorString = tam_vs.ToString() });
+
+                            tam_vs += numero;
+                            for (var k = 0; k < numero; k++)
+                            {
+                                tam_seg_dat += 2;
+                            }
+
+                            break;
+                        case "ADD":
+                            bw.Write((byte)instrucciones["ADD"].Codigo);//1 byte
+                            tam_seg_cod++;
+                            dir++;
+                            break;
+                        case "SUB":
+                            bw.Write((byte)instrucciones["SUB"].Codigo);//1 byte
+                            tam_seg_cod++;
+                            dir++;
+                            break;
+                        case "MULT":
+                            bw.Write((byte)instrucciones["MULT"].Codigo);//1 byte
+                            tam_seg_cod++;
+                            dir++;
+                            break;
+                        case "DIV":
+                            bw.Write((byte)instrucciones["DIV"].Codigo);//1 byte
+                            tam_seg_cod++;
+                            dir++;
+                            break;
+                        case "MOD":
+                            bw.Write((byte)instrucciones["MOD"].Codigo);//1 byte
+                            tam_seg_cod++;
+                            dir++;
                             break;
                         case "INC":
                             if (variables.ContainsKey(palabras_linea[j+1]))//si ya se definió la variable
@@ -219,10 +293,57 @@ namespace EnsambladorPrueba
                                 dir += 3;//3 bytes
                             }
                             break;
+                        case "DEC":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["DEC"].Codigo);//+1 byte
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);//+1 byte (aquí ya son 3 bytes de memoria)
+                                tam_seg_cod += 3;//3 bytes
+                                dir += 3;//3 bytes
+                            }
+                            break;
+                        case "CMPEQ":
+                            bw.Write((byte)instrucciones["CMPEQ"].Codigo);//1 byte
+                            tam_seg_cod++;
+                            dir++;
+                            break;
+                        case "CMPNE":
+                            bw.Write((byte)instrucciones["CMPNE"].Codigo);//1 byte
+                            tam_seg_cod++;
+                            dir++;
+                            break;
                         case "CMPLT":
                             bw.Write((byte)instrucciones["CMPLT"].Codigo);//1 byte
                             tam_seg_cod++;
                             dir++;
+                            break;
+                        case "CMPLE":
+                            bw.Write((byte)instrucciones["CMPLE"].Codigo);//1 byte
+                            tam_seg_cod++;
+                            dir++;
+                            break;
+                        case "CMPGT":
+                            bw.Write((byte)instrucciones["CMPGT"].Codigo);//1 byte
+                            tam_seg_cod++;
+                            dir++;
+                            break;
+                        case "CMPGE":
+                            bw.Write((byte)instrucciones["CMPGE"].Codigo);//1 byte
+                            tam_seg_cod++;
+                            dir++;
+                            break;
+                        case "JMP"://
+                            if (etiquetas_def.ContainsKey(palabras_linea[j + 1]))//si es una etiqueta definida
+                            {
+                                bw.Write((byte)instrucciones["JMP"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)etiquetas_def[palabras_linea[j + 1]]);//en TSN se guarda dir de la etiqueta definida
+                                etiquetas_refer.Add(tam_seg_cod, palabras_linea[j + 1]);
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+                            
                             break;
                         case "JMPT":
                             if (etiquetas_def.ContainsKey(palabras_linea[j + 1]))//si es una etiqueta definida
@@ -234,7 +355,37 @@ namespace EnsambladorPrueba
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
-                            
+
+                            break;
+                        case "JMPF"://
+                            if (etiquetas_def.ContainsKey(palabras_linea[j + 1]))//si es una etiqueta definida
+                            {
+                                bw.Write((byte)instrucciones["JMPF"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)etiquetas_def[palabras_linea[j + 1]]);//en TSN se guarda dir de la etiqueta definida
+                                etiquetas_refer.Add(tam_seg_cod, palabras_linea[j + 1]);
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+
+                            break;
+                        case "SETIDX"://
+                            bw.Write((byte)instrucciones["SETIDX"].Codigo);
+                            tam_seg_cod += 3;
+                            dir += 3;
+                            bw.Write(' ');//+1 byte
+                            bw.Write((byte)Int32.Parse(palabras_linea[j + 1]));
+
+                            break;
+                        case "SETIDXK"://
+                            bw.Write((byte)instrucciones["SETIDXK"].Codigo);
+                            tam_seg_cod += 5;
+                            dir += 5;
+                            bw.Write(' ');//+3 bytes (para que sean 5 en total)
+                            bw.Write(' ');
+                            bw.Write(' ');
+                            bw.Write((byte)Int32.Parse(palabras_linea[j + 1]));
+
                             break;
                         case "PUSHI":
                             if (variables.ContainsKey(palabras_linea[j+1]))//si ya se definió la variable
@@ -242,6 +393,56 @@ namespace EnsambladorPrueba
                                 bw.Write((byte)instrucciones["PUSHI"].Codigo);
                                 bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j+1]]);
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+                            break;
+                        case "PUSHD":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["PUSHD"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+                            break;
+                        case "PUSHS":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["PUSHS"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+                            break;
+                        case "PUSHAI":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["PUSHAI"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+                            break;
+                        case "PUSHAD":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["PUSHAD"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+                            break;
+                        case "PUSHAS":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["PUSHAS"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -256,6 +457,28 @@ namespace EnsambladorPrueba
                             bw.Write((byte)Int32.Parse(palabras_linea[j+1]));
                             
                             break;
+                        case "PUSHKD"://
+                            bw.Write((byte)instrucciones["PUSHKD"].Codigo);
+                            tam_seg_cod += 9;
+                            dir += 9;
+                            bw.Write(' ');//+7 bytes (para que sean 9 en total)
+                            bw.Write(' ');
+                            bw.Write(' ');
+                            bw.Write(' ');
+                            bw.Write(' ');
+                            bw.Write(' ');
+                            bw.Write(' ');
+                            bw.Write((byte)Int32.Parse(palabras_linea[j + 1]));
+
+                            break;
+                        case "PUSHKS"://
+                            bw.Write((byte)instrucciones["PUSHKS"].Codigo);
+                            tam_seg_cod += 2;
+                            dir += 2;
+                            bw.Write(' ');//+n bytes
+                            bw.Write((byte)Int32.Parse(palabras_linea[j + 1]));
+
+                            break;
                         case "POPI":
                             if (variables.ContainsKey(palabras_linea[j+1]))//si ya se definió la variable
                             {
@@ -268,10 +491,100 @@ namespace EnsambladorPrueba
                             }
                             
                             break;
+                        case "POPD":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["POPD"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+
+                            break;
+                        case "POPS":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["POPS"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+
+                            break;
+                        case "POPAI":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["POPAI"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+
+                            break;
+                        case "POPAD":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["POPAD"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+
+                            break;
+                        case "POPAS":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["POPAS"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+
+                            break;
                         case "POPIDX":
                             bw.Write((byte)instrucciones["POPIDX"].Codigo);
                             tam_seg_cod++;
                             dir++;
+                            break;
+                        case "READI":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["READI"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+                            break;
+                        case "READD":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["READD"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+                            break;
+                        case "READS":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["READS"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
                             break;
                         case "READAI":
                             if (variables.ContainsKey(palabras_linea[j+1]))//si ya se definió la variable
@@ -283,16 +596,95 @@ namespace EnsambladorPrueba
                                 dir += 3;
                             }
                             break;
-                        case "PRTAI":
+                        case "READAD":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["READAD"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+                            break;
+                        case "READAS":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["READAS"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+                            break;
+                        case "PRTM"://
+                            bw.Write((byte)instrucciones["PRTM"].Codigo);
+                            tam_seg_cod += 2;
+                            dir += 2;
+                            bw.Write(' ');//+n bytes
+                            bw.Write((byte)Int32.Parse(palabras_linea[j + 1]));
+
+                            break;
+                        case "PRTI":
                             if (variables.ContainsKey(palabras_linea[j+1]))//si ya se definió la variable
                             {
-                                bw.Write((byte)instrucciones["PRTAI"].Codigo);
+                                bw.Write((byte)instrucciones["PRTI"].Codigo);
                                 bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j+1]]);
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
                             break;
+                        case "PRTD":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["PRTD"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+                            break;
+                        case "PRTS":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["PRTS"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+                            break;
+                        case "PRTAI":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["PRTAI"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+                            break;
+                        case "PRTAD":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["PRTAD"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+                            break;
+                        case "PRTAS":
+                            if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
+                            {
+                                bw.Write((byte)instrucciones["PRTAS"].Codigo);
+                                bw.Write(' ');//+1 byte
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                tam_seg_cod += 3;
+                                dir += 3;
+                            }
+                            break;
+
                         case "HALT":
                             bw.Write((byte)instrucciones["HALT"].Codigo);
                             tam_seg_cod++;
