@@ -167,12 +167,12 @@ namespace EnsambladorPrueba
 
             BinaryWriter bw;
 
-            bw = new BinaryWriter(new FileStream("C:/Users/93764/Desktop/pruebas bin/probando tsn.TSN", FileMode.Create));
-            //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando tsn.TSN"
+            bw = new BinaryWriter(new FileStream("C:/Users/93764/Desktop/pruebas bin/probando stn.STN", FileMode.Create));
+            //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stn.STN"
             //ruta destino 2:
             //ruta destino 3:
 
-            string magic_number = "ICCTSN      ";//los espacios son para dejar vacíos por ahora los segmentos y el vector string
+            string magic_number = "ICCSTN      ";//los espacios son para dejar vacíos por ahora los segmentos y el vector string
             tam_seg_cod += 12;
             byte[] bytes = Encoding.ASCII.GetBytes(magic_number);//se escribe el magic number
             bw.Write(bytes);
@@ -287,8 +287,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j+1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["INC"].Codigo);//+1 byte
-                                bw.Write(' ');//+1 byte
-                                bw.Write((byte)variables[palabras_linea[j + 1]]);//+1 byte (aquí ya son 3 bytes de memoria)
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);//+1 byte
+                                bw.Write(' ');//+1 byte (aquí ya son 3 bytes de memoria)
                                 tam_seg_cod += 3;//3 bytes
                                 dir += 3;//3 bytes
                             }
@@ -297,8 +297,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["DEC"].Codigo);//+1 byte
-                                bw.Write(' ');//+1 byte
-                                bw.Write((byte)variables[palabras_linea[j + 1]]);//+1 byte (aquí ya son 3 bytes de memoria)
+                                bw.Write((byte)variables[palabras_linea[j + 1]]);//+1 byte
+                                bw.Write(' ');//+1 byte (aquí ya son 3 bytes de memoria)
                                 tam_seg_cod += 3;//3 bytes
                                 dir += 3;//3 bytes
                             }
@@ -337,8 +337,8 @@ namespace EnsambladorPrueba
                             if (etiquetas_def.ContainsKey(palabras_linea[j + 1]))//si es una etiqueta definida
                             {
                                 bw.Write((byte)instrucciones["JMP"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)etiquetas_def[palabras_linea[j + 1]]);//en TSN se guarda dir de la etiqueta definida
+                                bw.Write(' ');//+1 byte
                                 etiquetas_refer.Add(tam_seg_cod, palabras_linea[j + 1]);
                                 tam_seg_cod += 3;
                                 dir += 3;
@@ -349,8 +349,8 @@ namespace EnsambladorPrueba
                             if (etiquetas_def.ContainsKey(palabras_linea[j + 1]))//si es una etiqueta definida
                             {
                                 bw.Write((byte)instrucciones["JMPT"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)etiquetas_def[palabras_linea[j + 1]]);//en TSN se guarda dir de la etiqueta definida
+                                bw.Write(' ');//+1 byte
                                 etiquetas_refer.Add(tam_seg_cod, palabras_linea[j + 1]);
                                 tam_seg_cod += 3;
                                 dir += 3;
@@ -361,8 +361,8 @@ namespace EnsambladorPrueba
                             if (etiquetas_def.ContainsKey(palabras_linea[j + 1]))//si es una etiqueta definida
                             {
                                 bw.Write((byte)instrucciones["JMPF"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)etiquetas_def[palabras_linea[j + 1]]);//en TSN se guarda dir de la etiqueta definida
+                                bw.Write(' ');//+1 byte
                                 etiquetas_refer.Add(tam_seg_cod, palabras_linea[j + 1]);
                                 tam_seg_cod += 3;
                                 dir += 3;
@@ -373,26 +373,25 @@ namespace EnsambladorPrueba
                             bw.Write((byte)instrucciones["SETIDX"].Codigo);
                             tam_seg_cod += 3;
                             dir += 3;
-                            bw.Write(' ');//+1 byte
                             bw.Write((byte)Int32.Parse(palabras_linea[j + 1]));
+                            bw.Write(' ');//+1 byte
 
                             break;
                         case "SETIDXK"://
                             bw.Write((byte)instrucciones["SETIDXK"].Codigo);
                             tam_seg_cod += 5;
                             dir += 5;
+                            bw.Write((byte)Int32.Parse(palabras_linea[j + 1]));
                             bw.Write(' ');//+3 bytes (para que sean 5 en total)
                             bw.Write(' ');
                             bw.Write(' ');
-                            bw.Write((byte)Int32.Parse(palabras_linea[j + 1]));
-
                             break;
                         case "PUSHI":
                             if (variables.ContainsKey(palabras_linea[j+1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["PUSHI"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j+1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -401,8 +400,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["PUSHD"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -411,8 +410,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["PUSHS"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -421,8 +420,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["PUSHAI"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -431,8 +430,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["PUSHAD"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -441,8 +440,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["PUSHAS"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -451,16 +450,16 @@ namespace EnsambladorPrueba
                             bw.Write((byte)instrucciones["PUSHKI"].Codigo);
                             tam_seg_cod += 5;
                             dir += 5;
+                            bw.Write((byte)Int32.Parse(palabras_linea[j + 1]));
                             bw.Write(' ');//+3 bytes (para que sean 5 en total)
                             bw.Write(' ');
                             bw.Write(' ');
-                            bw.Write((byte)Int32.Parse(palabras_linea[j+1]));
-                            
                             break;
                         case "PUSHKD"://
                             bw.Write((byte)instrucciones["PUSHKD"].Codigo);
                             tam_seg_cod += 9;
                             dir += 9;
+                            bw.Write((byte)Int32.Parse(palabras_linea[j + 1]));
                             bw.Write(' ');//+7 bytes (para que sean 9 en total)
                             bw.Write(' ');
                             bw.Write(' ');
@@ -468,30 +467,25 @@ namespace EnsambladorPrueba
                             bw.Write(' ');
                             bw.Write(' ');
                             bw.Write(' ');
-                            bw.Write((byte)Int32.Parse(palabras_linea[j + 1]));
-
                             break;
                         case "PUSHKS"://
                             bw.Write((byte)instrucciones["PUSHKS"].Codigo);
                             tam_seg_cod += 2;
                             dir += 2;
-                            bw.Write(' ');//+1 byte
-
                             foreach (char c in palabras_linea[j + 1]) //+n bytes
                             {
                                 bw.Write((byte)c);
                                 tam_seg_cod++;
                                 dir++;
                             }
-
+                            bw.Write(' ');//+1 byte
                             break;
                         case "POPI":
                             if (variables.ContainsKey(palabras_linea[j+1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["POPI"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j+1]]);
-                                
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -501,9 +495,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["POPD"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
-
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -513,9 +506,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["POPS"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
-
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -525,9 +517,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["POPAI"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
-
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -537,9 +528,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["POPAD"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
-
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -549,9 +539,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["POPAS"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
-
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -566,8 +555,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["READI"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -576,8 +565,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["READD"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -586,8 +575,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["READS"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -596,8 +585,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j+1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["READAI"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j+1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -606,8 +595,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["READAD"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -616,8 +605,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["READAS"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -640,8 +629,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j+1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["PRTI"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j+1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -650,8 +639,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["PRTD"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -660,8 +649,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["PRTS"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -670,8 +659,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["PRTAI"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -680,8 +669,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["PRTAD"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -690,8 +679,8 @@ namespace EnsambladorPrueba
                             if (variables.ContainsKey(palabras_linea[j + 1]))//si ya se definió la variable
                             {
                                 bw.Write((byte)instrucciones["PRTAS"].Codigo);
-                                bw.Write(' ');//+1 byte
                                 bw.Write((byte)variables[palabras_linea[j + 1]]);
+                                bw.Write(' ');//+1 byte
                                 tam_seg_cod += 3;
                                 dir += 3;
                             }
@@ -730,16 +719,14 @@ namespace EnsambladorPrueba
 
             bw.Close();
 
-            string path2 = "C:/Users/93764/Desktop/pruebas bin/probando tsn.TSN";
-            //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando tsn.TSN"
+            string path2 = "C:/Users/93764/Desktop/pruebas bin/probando stn.STN";
+            //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stn.STN"
             //ruta destino 2:
             //ruta destino 3:
             byte[] readText2 = File.ReadAllBytes(path2);
             string a2 = ascii.GetString(readText2);
-            Console.WriteLine("Contenido del archivo TSN:\n" + a2);
-
-            Encoding utf8 = Encoding.UTF8;
-            foreach (byte s in readText2)
+            //Console.WriteLine("Contenido del archivo STN:\n" + a2);
+            foreach (byte s in readText2)//contenido del STN en bytes
             {
                 Console.Write(s + " ");
             }
