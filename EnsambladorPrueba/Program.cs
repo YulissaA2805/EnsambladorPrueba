@@ -41,12 +41,12 @@ namespace EnsambladorPrueba
         private static Dictionary <string, Instruccion> instrucciones = new Dictionary<string, Instruccion>()
         {
             { "NOP", new Instruccion{ Tamano=1, Codigo=0 } },
-            { "DEFI", new Instruccion{ Tamano=1, Codigo=-1 } },
-            { "DEFD", new Instruccion{ Tamano=1, Codigo=-1 } },
-            { "DEFS",new Instruccion{ Tamano=1, Codigo=-1 } },
-            { "DEFAI", new Instruccion{ Tamano=1, Codigo=-1 } },
-            { "DEFAD",new Instruccion{ Tamano=1, Codigo=-1 } },
-            { "DEFAS", new Instruccion{ Tamano=1, Codigo=-1 } },
+            { "DEFI", new Instruccion{ Tamano=0, Codigo=-1 } },
+            { "DEFD", new Instruccion{ Tamano=0, Codigo=-1 } },
+            { "DEFS",new Instruccion{ Tamano=0, Codigo=-1 } },
+            { "DEFAI", new Instruccion{ Tamano=0, Codigo=-1 } },
+            { "DEFAD",new Instruccion{ Tamano=0, Codigo=-1 } },
+            { "DEFAS", new Instruccion{ Tamano=0, Codigo=-1 } },
 
             { "ADD", new Instruccion{ Tamano=1, Codigo=1 } },
             { "SUB", new Instruccion{ Tamano=1, Codigo=2 } },
@@ -475,8 +475,14 @@ namespace EnsambladorPrueba
                             bw.Write((byte)instrucciones["PUSHKS"].Codigo);
                             tam_seg_cod += 2;
                             dir += 2;
-                            bw.Write(' ');//+n bytes
-                            bw.Write((byte)Int32.Parse(palabras_linea[j + 1]));
+                            bw.Write(' ');//+1 byte
+
+                            foreach (char c in palabras_linea[j + 1]) //+n bytes
+                            {
+                                bw.Write((byte)c);
+                                tam_seg_cod++;
+                                dir++;
+                            }
 
                             break;
                         case "POPI":
@@ -620,8 +626,14 @@ namespace EnsambladorPrueba
                             bw.Write((byte)instrucciones["PRTM"].Codigo);
                             tam_seg_cod += 2;
                             dir += 2;
-                            bw.Write(' ');//+n bytes
-                            bw.Write((byte)Int32.Parse(palabras_linea[j + 1]));
+                            bw.Write(' ');//+1 byte
+
+                            foreach (char c in palabras_linea[j + 1]) //+n bytes
+                            {
+                                bw.Write((byte)c);
+                                tam_seg_cod++;
+                                dir++;
+                            }
 
                             break;
                         case "PRTI":
