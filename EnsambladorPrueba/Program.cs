@@ -123,9 +123,9 @@ namespace EnsambladorPrueba
         //en etiquetas_ref la llave es la dir porque se pueden repetir las etiquetas
         static void Main(string[] args)
         {
-            string path = @"C:/Users/93764/Desktop/pruebas bin/prueba texto 2 en ase.ASE";//La ruta cambia dependiendo de la computadora
+            string path = @"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/prueba texto 2 en ase.ASE";//La ruta cambia dependiendo de la computadora
             //ruta 1:@"C:/Users/93764/Desktop/pruebas bin/prueba texto 2 en ase.ASE"
-            //ruta 2:
+            //ruta 2:@"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/prueba texto 2 en ase.ASE"
             //ruta 3:
 
             string result = Path.GetFileName(path);
@@ -167,9 +167,9 @@ namespace EnsambladorPrueba
 
             BinaryWriter bw;
 
-            bw = new BinaryWriter(new FileStream("C:/Users/93764/Desktop/pruebas bin/probando stn.STN", FileMode.Create));
+            bw = new BinaryWriter(new FileStream("D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN", FileMode.Create));
             //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stn.STN"
-            //ruta destino 2:
+            //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN"
             //ruta destino 3:
 
             string magic_number = "ICCSTN      ";//los espacios son para dejar vacíos por ahora los segmentos y el vector string
@@ -675,9 +675,9 @@ namespace EnsambladorPrueba
 
             bw.Close();
 
-            string path2 = "C:/Users/93764/Desktop/pruebas bin/probando stn.STN";
+            string path2 = "D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN";
             //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stn.STN"
-            //ruta destino 2:
+            //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN"
             //ruta destino 3:
             byte[] readText2 = File.ReadAllBytes(path2);
             //string a2 = ascii.GetString(readText2);
@@ -687,6 +687,95 @@ namespace EnsambladorPrueba
                 Console.Write(s + " ");
             }
             Console.WriteLine();
+
+            //aqui empieza el STNV
+            char[] nombreV = new char[30];
+            char[] copiaNV = new char[30];
+            for(int iV2 = 0; iV2 < 30; iV2++)
+            {
+                copiaNV[iV2] = '0';
+            }
+            short dirV, numElementos, VS;
+            byte tipoV;
+            string acum = System.String.Empty;
+
+            Console.WriteLine("Tabla de variables: ");
+            foreach(Variable unaVariable in tabla_var)
+            {
+                nombreV = unaVariable.Nombre.ToCharArray();
+                for(int iV = 0; iV<nombreV.Length; iV++)
+                {
+                    copiaNV[iV] = nombreV[iV];
+                }
+                Console.Write(copiaNV);
+                for (int iV3 = 0; iV3 < copiaNV.Length; iV3++)
+                {
+                    acum += copiaNV[iV3];
+                }
+                for (int iV2 = 0; iV2 < 30; iV2++)
+                {
+                    copiaNV[iV2] = '0';
+                }
+                dirV = Convert.ToInt16(unaVariable.Direccion);
+                Console.Write(dirV);
+                acum += dirV;
+                switch (unaVariable.Tipo)
+                {
+                    case "int":
+                        tipoV = 0;
+                        Console.Write(tipoV);
+                        acum += tipoV;
+                        break;
+                    case "double":
+                        tipoV = 1;
+                        Console.Write(tipoV);
+                        acum += tipoV;
+                        break;
+                    case "string":
+                        tipoV = 2;
+                        Console.Write(tipoV);
+                        acum += tipoV;
+                        break;
+                    case "array int":
+                        tipoV = 10;
+                        Console.Write(tipoV);
+                        acum += tipoV;
+                        break;
+                    case "array double":
+                        tipoV = 11;
+                        Console.Write(tipoV);
+                        acum += tipoV;
+                        break;
+                    case "array string":
+                        tipoV = 12;
+                        Console.Write(tipoV);
+                        acum += tipoV;
+                        break;
+                    default:
+                        Console.Write("Tipo de variable desconocido");
+                        break;
+                }
+                numElementos = Convert.ToInt16(unaVariable.numeroElementos);
+                Console.Write(numElementos);
+                acum += numElementos;
+                if (unaVariable.vectorString == "X")
+                {
+                    VS = 0;
+                    Console.Write(VS);
+                    acum += VS;
+                }
+                else
+                {
+                    VS = Convert.ToInt16(unaVariable.vectorString);
+                    Console.Write(VS);
+                    acum += VS;
+                }
+            }
+            string path3 = "D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stnv.STNV";
+            //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stnv.STNV"
+            //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN"
+            //ruta destino 3:
+            File.WriteAllText(path3, acum);
 
             //aquí empieza desensamblador
         }
