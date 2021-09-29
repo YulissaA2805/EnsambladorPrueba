@@ -776,8 +776,73 @@ namespace EnsambladorPrueba
             //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN"
             //ruta destino 3:
             File.WriteAllText(path3, acum);
+            Console.WriteLine("");
 
             //aquí empieza desensamblador
+        
+            byte[] segcod = new byte[tam_seg_cod];//crea array del tamano del segmento de codigo
+            int contador = 0;
+            foreach (byte s in readText2)//llena el array con los bytes del segmento de codigo en cada espacio
+            {
+                segcod[contador] = s;
+                contador++;
+            }
+            for (contador = 12; contador < tam_seg_cod; contador++)//recorre el array, compara con el codigo de cada instruccion
+            {                                                     //y escribe la instruccion que corresponde
+                switch (segcod[contador])//Imprime la instruccion segun el codigo de operacion, y aumenta el espacio recorrido segun la instruccion
+                {
+                    case 6:
+                        Console.WriteLine("INC");
+                        contador += 2;
+                        break;
+                    case 10:
+                        Console.WriteLine("CMPLT");
+                        break;
+                    case 15:
+                        Console.WriteLine("JMPT");
+                        contador += 2;
+                        break;
+                    case 19:
+                        Console.WriteLine("PUSHI");
+                        contador += 2;
+                        break;
+                    case 25:
+                        Console.Write("PUSHKI ");
+                        byte[] baits = new byte[4];
+                        int copiaContador;
+                        copiaContador = contador + 1;
+                        for(int counter = 0; counter < 4; counter++)
+                        {
+                            baits[counter] = segcod[copiaContador];
+                            copiaContador++;
+                        }
+                        int yeet = BitConverter.ToInt32(baits, 0);
+                        Console.WriteLine("{0}", yeet);
+                        contador += 4;
+                        break;
+                    case 28:
+                        Console.WriteLine("POPI");
+                        contador += 2;
+                        break;
+                    case 34:
+                        Console.WriteLine("POPIDX");
+                        break;
+                    case 38:
+                        Console.WriteLine("READAI");
+                        contador += 2;
+                        break;
+                    case 45:
+                        Console.WriteLine("PRTAI");
+                        contador += 2;
+                        break;
+                    case 48:
+                        Console.WriteLine("HALT");
+                        break;
+                    default:
+                        Console.WriteLine("Instruccion desconocida");
+                        break;
+                }
+            }
         }
     }
 }
