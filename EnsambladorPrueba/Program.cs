@@ -791,48 +791,220 @@ namespace EnsambladorPrueba
             {                                                     //y escribe la instruccion que corresponde
                 switch (segcod[contador])//Imprime la instruccion segun el codigo de operacion, y aumenta el espacio recorrido segun la instruccion
                 {
+                    case 1:
+                        Console.WriteLine("ADD");
+                        break;
+                    case 2:
+                        Console.WriteLine("SUB");
+                        break;
+                    case 3:
+                        Console.WriteLine("MULT");
+                        break;
+                    case 4:
+                        Console.WriteLine("DIV");
+                        break;
+                    case 5:
+                        Console.WriteLine("MOD");
+                        break;
                     case 6:
                         Console.WriteLine("INC");
                         contador += 2;
                         break;
+                    case 7:
+                        Console.WriteLine("DEC");
+                        contador += 2;
+                        break;
+                    case 8:
+                        Console.WriteLine("CMPEQ");
+                        break;
+                    case 9:
+                        Console.WriteLine("CMPNE");
+                        break;
                     case 10:
                         Console.WriteLine("CMPLT");
+                        break;
+                    case 11:
+                        Console.WriteLine("CMPLE");
+                        break;
+                    case 12:
+                        Console.WriteLine("CMPGT");
+                        break;
+                    case 13:
+                        Console.WriteLine("CMPGE");
+                        break;
+                    case 14:
+                        Console.WriteLine("JMP");
+                        contador += 2;
                         break;
                     case 15:
                         Console.WriteLine("JMPT");
                         contador += 2;
                         break;
+                    case 16:
+                        Console.WriteLine("JMPF");
+                        contador += 2;
+                        break;
+                    case 17:
+                        Console.WriteLine("SETIDX");
+                        contador += 2;
+                        break;
+                    case 18:
+                        Console.WriteLine("SETIDXK");
+                        byte[] baitsSETIDXK = new byte[4];
+                        int copiaContadorSETIDXK;
+                        copiaContadorSETIDXK = contador + 1;
+                        for (int counter = 0; counter < 4; counter++)
+                        {
+                            baitsSETIDXK[counter] = segcod[copiaContadorSETIDXK];
+                            copiaContadorSETIDXK++;
+                        }
+                        int yeetSETIDXK = BitConverter.ToInt32(baitsSETIDXK, 0);
+                        Console.WriteLine("{0}", yeetSETIDXK);
+                        contador += 4;
+                        break;
                     case 19:
                         Console.WriteLine("PUSHI");
                         contador += 2;
                         break;
+                    case 20:
+                        Console.WriteLine("PUSHD");
+                        contador += 2;
+                        break;
+                    case 21:
+                        Console.WriteLine("PUSHS");
+                        contador += 2;
+                        break;
+                    case 22:
+                        Console.WriteLine("PUSHAI");
+                        contador += 2;
+                        break;
+                    case 23:
+                        Console.WriteLine("PUSHAD");
+                        contador += 2;
+                        break;
+                    case 24:
+                        Console.WriteLine("PUSHAS");
+                        contador += 2;
+                        break;
                     case 25:
                         Console.Write("PUSHKI ");
-                        byte[] baits = new byte[4];
-                        int copiaContador;
-                        copiaContador = contador + 1;
+                        byte[] baitsPUSHKI = new byte[4];
+                        int copiaContadorPUSHKI;
+                        copiaContadorPUSHKI = contador + 1;
                         for(int counter = 0; counter < 4; counter++)
                         {
-                            baits[counter] = segcod[copiaContador];
-                            copiaContador++;
+                            baitsPUSHKI[counter] = segcod[copiaContadorPUSHKI];
+                            copiaContadorPUSHKI++;
                         }
-                        int yeet = BitConverter.ToInt32(baits, 0);
-                        Console.WriteLine("{0}", yeet);
+                        int yeetPUSHKI = BitConverter.ToInt32(baitsPUSHKI, 0);
+                        Console.WriteLine("{0}", yeetPUSHKI);
                         contador += 4;
+                        break;
+                    case 26:
+                        Console.Write("PUSHKD ");
+                        byte[] baitsPUSHKD = new byte[4];
+                        int copiaContadorPUSHKD;
+                        copiaContadorPUSHKD = contador + 1;
+                        for (int counter = 0; counter < 4; counter++)
+                        {
+                            baitsPUSHKD[counter] = segcod[copiaContadorPUSHKD];
+                            copiaContadorPUSHKD++;
+                        }
+                        int yeetPUSHKD = BitConverter.ToInt32(baitsPUSHKD, 0);
+                        Console.WriteLine("{0}", yeetPUSHKD);
+                        contador += 8;
+                        break;
+                    case 27:
+                        Console.Write("PUSHKS ");
+                        byte[] baitsPUSHKS = new byte[4];
+                        int copiaContadorPUSHKS;
+                        copiaContadorPUSHKS = contador + 1;
+                        for (int counter = 0; counter < 4; counter++)
+                        {
+                            baitsPUSHKS[counter] = segcod[copiaContadorPUSHKS];
+                            copiaContadorPUSHKS++;
+                        }
+                        int yeetPUSHKS = BitConverter.ToInt32(baitsPUSHKS, 0);
+                        Console.WriteLine("{0}", yeetPUSHKS);
+                        contador ++;
                         break;
                     case 28:
                         Console.WriteLine("POPI");
                         contador += 2;
                         break;
+                    case 29:
+                        Console.WriteLine("POPD");
+                        contador += 2;
+                        break;
+                    case 30:
+                        Console.WriteLine("POPS");
+                        contador += 2;
+                        break;
+                    case 31:
+                        Console.WriteLine("POPAI");
+                        contador += 2;
+                        break;
+                    case 32:
+                        Console.WriteLine("POPAD");
+                        contador += 2;
+                        break;
+                    case 33:
+                        Console.WriteLine("POPAS");
+                        contador += 2;
+                        break;
                     case 34:
                         Console.WriteLine("POPIDX");
+                        break;
+                    case 35:
+                        Console.WriteLine("READI");
+                        contador += 2;
+                        break;
+                    case 36:
+                        Console.WriteLine("READD");
+                        contador += 2;
+                        break;
+                    case 37:
+                        Console.WriteLine("READS");
+                        contador += 2;
                         break;
                     case 38:
                         Console.WriteLine("READAI");
                         contador += 2;
                         break;
+                    case 39:
+                        Console.WriteLine("READAD");
+                        contador += 2;
+                        break;
+                    case 40:
+                        Console.WriteLine("READAS");
+                        contador += 2;
+                        break;
+                    case 41:
+                        Console.WriteLine("PRTM");
+                        contador++;
+                        break;
+                    case 42:
+                        Console.WriteLine("PRTI");
+                        contador += 2;
+                        break;
+                    case 43:
+                        Console.WriteLine("PRTD");
+                        contador += 2;
+                        break;
+                    case 44:
+                        Console.WriteLine("PRTS");
+                        contador += 2;
+                        break;
                     case 45:
                         Console.WriteLine("PRTAI");
+                        contador += 2;
+                        break;
+                    case 46:
+                        Console.WriteLine("PRTAD");
+                        contador += 2;
+                        break;
+                    case 47:
+                        Console.WriteLine("PRTAS");
                         contador += 2;
                         break;
                     case 48:
