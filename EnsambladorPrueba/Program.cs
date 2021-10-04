@@ -123,10 +123,10 @@ namespace EnsambladorPrueba
         //en etiquetas_ref la llave es la dir porque se pueden repetir las etiquetas
         static void Main(string[] args)
         {
-            string path = @"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/prueba texto 2 en ase.ASE";//La ruta cambia dependiendo de la computadora
+            string path = @"C:/Users/ludmi/Downloads/prueba-texto-2-en-ase.ASE";//La ruta cambia dependiendo de la computadora
             //ruta 1:@"C:/Users/93764/Desktop/pruebas bin/prueba texto 2 en ase.ASE"
             //ruta 2:@"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/prueba texto 2 en ase.ASE"
-            //ruta 3:
+            //ruta 3:@"C:/Users/ludmi/Downloads/prueba-texto-2-en-ase.ASE"
 
             string result = Path.GetFileName(path);
             if(Path.GetExtension(path) != ".ASE")
@@ -167,10 +167,10 @@ namespace EnsambladorPrueba
 
             BinaryWriter bw;
 
-            bw = new BinaryWriter(new FileStream("D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN", FileMode.Create));
+            bw = new BinaryWriter(new FileStream("C:/Users/ludmi/Downloads/probando stn.STN", FileMode.Create));
             //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stn.STN"
             //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN"
-            //ruta destino 3:
+            //ruta destino 3:"C:/Users/ludmi/Downloads/probando stn.STN"
 
             string magic_number = "ICCSTN      ";//los espacios son para dejar vacíos por ahora los segmentos y el vector string
             tam_seg_cod += 12;
@@ -675,10 +675,10 @@ namespace EnsambladorPrueba
 
             bw.Close();
 
-            string path2 = "D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN";
+            string path2 = "C:/Users/ludmi/Downloads/probando stn.STN";
             //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stn.STN"
             //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN"
-            //ruta destino 3:
+            //ruta destino 3:"C:/Users/ludmi/Downloads/probando stn.STN"
             byte[] readText2 = File.ReadAllBytes(path2);
             //string a2 = ascii.GetString(readText2);
             //Console.WriteLine("Contenido del archivo STN:\n" + a2);
@@ -771,10 +771,10 @@ namespace EnsambladorPrueba
                     acum += VS;
                 }
             }
-            string path3 = "D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stnv.STNV";
+            string path3 = "C:/Users/ludmi/Downloads/probando stnv.STNV";
             //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stnv.STNV"
             //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN"
-            //ruta destino 3:
+            //ruta destino 3:"C:/Users/ludmi/Downloads/probando stnv.STNV"
             File.WriteAllText(path3, acum);
             Console.WriteLine("");
 
@@ -787,8 +787,39 @@ namespace EnsambladorPrueba
                 segcod[contador] = s;
                 contador++;
             }
+
+            //lista de variables del .stnv
+            List<Variable> varias = new List<Variable>();
+            string varia = "";
+            int varContador = 0, cont = 0;
+            foreach (char c in File.ReadAllText(path3))
+            {
+                if(varContador < 30)//hasta 30 bytes
+                {
+                    if (Char.IsLetter(c))
+                    {
+                        varia += c;
+                    }
+                    varContador++;
+                }
+                else if(Char.IsLetter(c))//verifica si hay otra variables
+                {
+                    //se añade la variable guardada en varia a la lista
+                    varias.Add(new Variable() { Nombre = varia, Direccion = tabla_var[cont].Direccion, Tipo = "", numeroElementos = "", vectorString = "" });
+                    cont++;
+                    varia = "";
+                    varia += c;
+                    varContador = 1;
+                }
+            }
+
+            varias.Add(new Variable() { Nombre = varia, Direccion = tabla_var[cont].Direccion, Tipo = "", numeroElementos = "", vectorString = "" });
+
+
+            int conta;
             for (contador = 12; contador < tam_seg_cod; contador++)//recorre el array, compara con el codigo de cada instruccion
             {                                                     //y escribe la instruccion que corresponde
+                conta = 0;
                 switch (segcod[contador])//Imprime la instruccion segun el codigo de operacion, y aumenta el espacio recorrido segun la instruccion
                 {
                     case 1:
@@ -807,12 +838,24 @@ namespace EnsambladorPrueba
                         Console.WriteLine("MOD");
                         break;
                     case 6:
-                        Console.WriteLine("INC");
-                        contador += 2;
+                        Console.Write("INC ");
+                        contador++;
+                        while(segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 7:
-                        Console.WriteLine("DEC");
-                        contador += 2;
+                        Console.Write("DEC ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 8:
                         Console.WriteLine("CMPEQ");
@@ -863,28 +906,64 @@ namespace EnsambladorPrueba
                         contador += 4;
                         break;
                     case 19:
-                        Console.WriteLine("PUSHI");
-                        contador += 2;
+                        Console.Write("PUSHI ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 20:
-                        Console.WriteLine("PUSHD");
-                        contador += 2;
+                        Console.Write("PUSHD ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 21:
-                        Console.WriteLine("PUSHS");
-                        contador += 2;
+                        Console.Write("PUSHS ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 22:
-                        Console.WriteLine("PUSHAI");
-                        contador += 2;
+                        Console.Write("PUSHAI ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 23:
-                        Console.WriteLine("PUSHAD");
-                        contador += 2;
+                        Console.Write("PUSHAD ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 24:
-                        Console.WriteLine("PUSHAS");
-                        contador += 2;
+                        Console.Write("PUSHAS ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 25:
                         Console.Write("PUSHKI ");
@@ -929,83 +1008,191 @@ namespace EnsambladorPrueba
                         contador ++;
                         break;
                     case 28:
-                        Console.WriteLine("POPI");
-                        contador += 2;
+                        Console.Write("POPI ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 29:
-                        Console.WriteLine("POPD");
-                        contador += 2;
+                        Console.Write("POPD ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 30:
-                        Console.WriteLine("POPS");
-                        contador += 2;
+                        Console.Write("POPS ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 31:
-                        Console.WriteLine("POPAI");
-                        contador += 2;
+                        Console.Write("POPAI ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 32:
-                        Console.WriteLine("POPAD");
-                        contador += 2;
+                        Console.Write("POPAD ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 33:
-                        Console.WriteLine("POPAS");
-                        contador += 2;
+                        Console.Write("POPAS ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 34:
                         Console.WriteLine("POPIDX");
                         break;
                     case 35:
-                        Console.WriteLine("READI");
-                        contador += 2;
+                        Console.Write("READI ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 36:
-                        Console.WriteLine("READD");
-                        contador += 2;
+                        Console.Write("READD ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 37:
-                        Console.WriteLine("READS");
-                        contador += 2;
+                        Console.Write("READS ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 38:
-                        Console.WriteLine("READAI");
-                        contador += 2;
+                        Console.Write("READAI ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 39:
-                        Console.WriteLine("READAD");
-                        contador += 2;
+                        Console.Write("READAD ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 40:
-                        Console.WriteLine("READAS");
-                        contador += 2;
+                        Console.Write("READAS ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 41:
                         Console.WriteLine("PRTM");
                         contador++;
                         break;
                     case 42:
-                        Console.WriteLine("PRTI");
-                        contador += 2;
+                        Console.Write("PRTI ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 43:
-                        Console.WriteLine("PRTD");
-                        contador += 2;
+                        Console.Write("PRTD ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 44:
-                        Console.WriteLine("PRTS");
-                        contador += 2;
+                        Console.Write("PRTS ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 45:
-                        Console.WriteLine("PRTAI");
-                        contador += 2;
+                        Console.Write("PRTAI ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 46:
-                        Console.WriteLine("PRTAD");
-                        contador += 2;
+                        Console.Write("PRTAD ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 47:
-                        Console.WriteLine("PRTAS");
-                        contador += 2;
+                        Console.Write("PRTAS ");
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 48:
                         Console.WriteLine("HALT");
