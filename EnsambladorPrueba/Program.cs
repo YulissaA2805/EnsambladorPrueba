@@ -124,7 +124,7 @@ namespace EnsambladorPrueba
         //en etiquetas_ref la llave es la dir porque se pueden repetir las etiquetas
         static void Main(string[] args)
         {
-            string path = @"C:/Users/93764/Desktop/pruebas bin/prueba texto 2 en ase.ASE";//La ruta cambia dependiendo de la computadora
+            string path = @"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/prueba texto 2 en ase.ASE";//La ruta cambia dependiendo de la computadora
             //ruta 1:@"C:/Users/93764/Desktop/pruebas bin/prueba texto 2 en ase.ASE"
             //ruta 2:@"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/prueba texto 2 en ase.ASE"
             //ruta 3:@"C:/Users/ludmi/Downloads/prueba-texto-2-en-ase.ASE"
@@ -168,7 +168,7 @@ namespace EnsambladorPrueba
 
             BinaryWriter bw;
 
-            bw = new BinaryWriter(new FileStream("C:/Users/93764/Desktop/pruebas bin/probando stn.STN", FileMode.Create));
+            bw = new BinaryWriter(new FileStream("D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN", FileMode.Create));
             //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stn.STN"
             //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN"
             //ruta destino 3:"C:/Users/ludmi/Downloads/probando stn.STN"
@@ -448,7 +448,7 @@ namespace EnsambladorPrueba
                             break;
                         case "PUSHKS"://
                             bw.Write((byte)instrucciones["PUSHKS"].Codigo);
-                            bw.Write(palabras_linea[j + 1].Length);//escribe cuántas letras tiene la constante string
+                            bw.Write((byte)palabras_linea[j + 1].Length);//escribe cuántas letras tiene la constante string
                             tam_seg_cod += 2;
                             dir += 2;
                             foreach (char c in palabras_linea[j + 1]) //+n bytes
@@ -579,7 +579,7 @@ namespace EnsambladorPrueba
                             break;
                         case "PRTM"://
                             bw.Write((byte)instrucciones["PRTM"].Codigo);
-                            bw.Write(palabras_linea[j + 1].Length);//escribe cuántas letras tiene el mensaje
+                            bw.Write((byte)palabras_linea[j + 1].Length);//escribe cuántas letras tiene el mensaje
                             tam_seg_cod += 2;
                             dir += 2;
                             foreach (char c in palabras_linea[j + 1]) //+n bytes
@@ -681,7 +681,7 @@ namespace EnsambladorPrueba
 
             bw.Close();
 
-            string path2 = "C:/Users/93764/Desktop/pruebas bin/probando stn.STN";
+            string path2 = "D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN";
             //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stn.STN"
             //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN"
             //ruta destino 3:"C:/Users/ludmi/Downloads/probando stn.STN"
@@ -777,9 +777,9 @@ namespace EnsambladorPrueba
                     acum += VS;
                 }
             }
-            string path3 = "C:/Users/93764/Desktop/pruebas bin/probando stnv.STNV";
+            string path3 = "D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stnv.STNV";
             //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stnv.STNV"
-            //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN"
+            //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stnv.STNV"
             //ruta destino 3:"C:/Users/ludmi/Downloads/probando stnv.STNV"
             File.WriteAllText(path3, acum);
             Console.WriteLine("");
@@ -1004,17 +1004,16 @@ namespace EnsambladorPrueba
                         break;
                     case 27:
                         Console.Write("PUSHKS ");
-                        byte[] baitsPUSHKS = new byte[4];
-                        int copiaContadorPUSHKS;
-                        copiaContadorPUSHKS = contador + 1;
-                        for (int counter = 0; counter < 4; counter++)
+                        int cantBytes = segcod[contador + 1];
+                        contador += 2;
+                        for(int contPUSHKS = 0; contPUSHKS < cantBytes; contPUSHKS++)
                         {
-                            baitsPUSHKS[counter] = segcod[copiaContadorPUSHKS];
-                            copiaContadorPUSHKS++;
+                            char c2 = Convert.ToChar(segcod[contador]);
+                            Console.Write(c2);
+                            contador++;
                         }
-                        int yeetPUSHKS = BitConverter.ToInt32(baitsPUSHKS, 0);
-                        Console.WriteLine("{0}", yeetPUSHKS);
-                        contador ++;
+                        contador--;
+                        Console.WriteLine("");
                         break;
                     case 28:
                         Console.Write("POPI ");
@@ -1140,8 +1139,17 @@ namespace EnsambladorPrueba
                         contador++;
                         break;
                     case 41:
-                        Console.WriteLine("PRTM");
-                        contador++;
+                        Console.Write("PRTM ");
+                        int cantdeBytes = segcod[contador + 1];
+                        contador += 2;
+                        for (int contPUSHKS = 0; contPUSHKS < cantdeBytes; contPUSHKS++)
+                        {
+                            char c2 = Convert.ToChar(segcod[contador]);
+                            Console.Write(c2);
+                            contador++;
+                        }
+                        contador--;
+                        Console.WriteLine("");
                         break;
                     case 42:
                         Console.Write("PRTI ");
