@@ -114,6 +114,35 @@ namespace EnsambladorPrueba
             {11, "array double"},
             {12, "array string"},
         };
+
+        class Pila<T>
+        {
+            private T[] vector = new T[100];
+            private int tope = 0;
+
+            public void Push(T x)
+            {
+                vector[tope] = x;
+                tope++;
+            }
+
+            public T Pop()
+            {
+                tope--;
+                return vector[tope];
+            }
+
+            public int Count()
+            {
+                return vector.Length;
+            }
+
+            public int Tope()
+            {
+                return tope;
+            }
+        }
+
         private static List<Variable> tabla_var = new List<Variable>();
 
         private static Dictionary<string, int> variables = new Dictionary<string, int>();
@@ -124,7 +153,7 @@ namespace EnsambladorPrueba
         //en etiquetas_ref la llave es la dir porque se pueden repetir las etiquetas
         static void Main(string[] args)
         {
-            string path = @"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/prueba texto 2 en ase.ASE";//La ruta cambia dependiendo de la computadora
+            string path = @"C:/Users/93764/Desktop/pruebas bin/prueba texto 2 en ase.ASE";//La ruta cambia dependiendo de la computadora
             //ruta 1:@"C:/Users/93764/Desktop/pruebas bin/prueba texto 2 en ase.ASE"
             //ruta 2:@"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/prueba texto 2 en ase.ASE"
             //ruta 3:@"C:/Users/ludmi/Downloads/prueba-texto-2-en-ase.ASE"
@@ -168,7 +197,7 @@ namespace EnsambladorPrueba
 
             BinaryWriter bw;
 
-            bw = new BinaryWriter(new FileStream("D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN", FileMode.Create));
+            bw = new BinaryWriter(new FileStream("C:/Users/93764/Desktop/pruebas bin/probando stn.STN", FileMode.Create));
             //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stn.STN"
             //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN"
             //ruta destino 3:"C:/Users/ludmi/Downloads/probando stn.STN"
@@ -681,7 +710,7 @@ namespace EnsambladorPrueba
 
             bw.Close();
 
-            string path2 = "D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN";
+            string path2 = "C:/Users/93764/Desktop/pruebas bin/probando stn.STN";
             //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stn.STN"
             //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN"
             //ruta destino 3:"C:/Users/ludmi/Downloads/probando stn.STN"
@@ -704,6 +733,74 @@ namespace EnsambladorPrueba
             short dirV, numElementos, VS;
             byte tipoV;
             string acum = System.String.Empty;
+
+            Dictionary<String, Object> variables_generadas = new Dictionary<string, object>();//guarda variables para máquina virtual
+            var obj = new Object();//este objeto servirá para crear cada variable
+            foreach (Variable v in tabla_var)
+            {
+                string objnombre = v.Nombre;
+                string objtipo = v.Tipo;
+                string objnumelementos = v.numeroElementos;
+
+                switch (objtipo)
+                {
+                    case "int":
+                        obj = new int();
+                        break;
+                    case "double":
+                        obj = new double();
+                        break;
+                    case "string":
+                        obj = new string("");
+                        break;
+                    case "array int":
+                        obj = new int[Convert.ToInt32(objnumelementos)];
+                        break;
+                    case "array double":
+                        obj = new double[Convert.ToInt32(objnumelementos)];
+                        break;
+                    case "array string":
+                        obj = new string[Convert.ToInt32(objnumelementos)];
+                        break;
+                    default:
+                        obj = null;
+                        break;
+                }
+                if (obj != null)
+                    variables_generadas.Add(objnombre, obj);
+            }
+            //variables_generadas["i"] = -1 + (int)variables_generadas["i"];//prueba de inicializacion de variables
+            //variables_generadas["MATRICULA"] = new int[] {123, 456};//prueba de inicializacion de variables ESTE NO SIRVE
+
+            foreach (var v in variables_generadas)//Imprime variables generadas para probar
+            {
+                Console.WriteLine(v.ToString());
+                if(v.Value.ToString().Equals("System.Int32[]"))//Si es array int
+                {
+                    int[] copiaArrayInt = (int[])v.Value;
+                    for (int j=0; j< copiaArrayInt.Length; j++)
+                    {
+                        Console.WriteLine(copiaArrayInt[j]);
+                    }
+                }
+                else if (v.Value.ToString().Equals("System.Double[]"))//Si es array double
+                {
+                    double[] copiaArrayDouble = (double[])v.Value;
+                    for (int j = 0; j < copiaArrayDouble.Length; j++)
+                    {
+                        Console.WriteLine(copiaArrayDouble[j]);
+                    }
+                }
+                else if (v.Value.ToString().Equals("System.String[]"))//Si es array string
+                {
+                    string[] copiaArrayString = (string[])v.Value;
+                    for (int j = 0; j < copiaArrayString.Length; j++)
+                    {
+                        Console.WriteLine(copiaArrayString[j]);
+                    }
+                }
+            }
+            
 
             Console.WriteLine("Tabla de variables: ");
             foreach(Variable unaVariable in tabla_var)
@@ -777,7 +874,7 @@ namespace EnsambladorPrueba
                     acum += VS;
                 }
             }
-            string path3 = "D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stnv.STNV";
+            string path3 = "C:/Users/93764/Desktop/pruebas bin/probando stnv.STNV";
             //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stnv.STNV"
             //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stnv.STNV"
             //ruta destino 3:"C:/Users/ludmi/Downloads/probando stnv.STNV"
@@ -885,16 +982,22 @@ namespace EnsambladorPrueba
                         Console.WriteLine("CMPGE");
                         break;
                     case 14:
-                        Console.WriteLine("JMP");
-                        contador += 2;
+                        Console.Write("JMP ");
+                        contador++;
+                        Console.Write(segcod[contador] + "\n");
+                        contador++;
                         break;
                     case 15:
-                        Console.WriteLine("JMPT");
-                        contador += 2;
+                        Console.Write("JMPT ");
+                        contador++;
+                        Console.Write(segcod[contador] + "\n");
+                        contador++;
                         break;
                     case 16:
-                        Console.WriteLine("JMPF");
-                        contador += 2;
+                        Console.Write("JMPF ");
+                        contador++;
+                        Console.Write(segcod[contador] + "\n");
+                        contador++;
                         break;
                     case 17:
                         Console.WriteLine("SETIDX");
@@ -1223,6 +1326,409 @@ namespace EnsambladorPrueba
                 }//switch
             }//for
 
+            //aquí empieza máquina virtual
+            Console.WriteLine("-------------- MÁQUINA VIRTUAL--------------\n");
+            Pila<Object> pila_main = new Pila<Object>();//pila principal
+
+            //var obj_aux = new Object();//objeto auxiliar para la variable en la instrucción NO SE OCUPA AHORITA
+            int idx_array = 0;
+            bool boolean_main = false;
+            int[] copiaArrayIntMV;
+
+            for (contador = 12; contador < tam_seg_cod; contador++)//recorre el array, compara con el codigo de cada instruccion
+            {                                                     //y simula lo que debe realizar la instrucción
+                conta = 0;
+                switch (segcod[contador])//Imprime la instruccion segun el codigo de operacion, y aumenta el espacio recorrido segun la instruccion
+                {
+                    case 0://NOP
+                        break;
+                    case 1://ADD
+                        break;
+                    case 2://SUB
+                        break;
+                    case 3://MULT
+                        break;
+                    case 4://DIV
+                        break;
+                    case 5://MOD
+                        break;
+                    case 6://INC
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        variables_generadas[varias[conta].Nombre] = 1 + (int)variables_generadas[varias[conta].Nombre];
+                        //Console.WriteLine(variables_generadas[varias[conta].Nombre]);
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 7://DEC
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 8://CMPEQ
+                        break;
+                    case 9://CMPNE
+                        break;
+                    case 10://CMPLT
+                        int cmplt2 = (int)pila_main.Pop();//se guarda el int del tope de la pila en cmplt2
+                        int cmplt1 = (int)pila_main.Pop();//se guarda el siguiente int del tope de la pila en cmplt1
+                        //Console.WriteLine("cmplt1: {0}, cmplt2: {1}", cmplt1, cmplt2);
+                        if(cmplt1 < cmplt2)
+                        {
+                            boolean_main = true;
+                        }
+                        else
+                        {
+                            boolean_main = false;
+                        }
+                        break;
+                    case 11://CMPLE
+                        break;
+                    case 12://CMPGT
+                        break;
+                    case 13://CMPGE
+                        break;
+                    case 14://JMP
+                        contador++;
+                        //Console.Write(segcod[contador] + "\n");
+                        contador++;
+                        break;
+                    case 15://JMPT
+                        contador++;//se mueve al byte de la linea a la que se salta con JMPT
+                        //Console.WriteLine("bool: "+boolean_main);
+                        //Console.WriteLine("idx_array: " + idx_array);
+                        //Console.WriteLine("segcod: " + (segcod[contador]+11));
+                        if (boolean_main)
+                        {
+                            contador = (segcod[contador]+11);
+                        }
+                        else
+                        {
+                            contador++;
+                        }
+                        //Console.Write(segcod[contador] + "\n");
+                        break;
+                    case 16://JMPF
+                        contador++;
+                        //Console.Write(segcod[contador] + "\n");
+                        contador++;
+                        break;
+                    case 17://SETIDX
+                        contador += 2;
+                        break;
+                    case 18://SETIDXK
+                        byte[] baitsSETIDXK = new byte[4];
+                        int copiaContadorSETIDXK;
+                        copiaContadorSETIDXK = contador + 1;
+                        for (int counter = 0; counter < 4; counter++)
+                        {
+                            baitsSETIDXK[counter] = segcod[copiaContadorSETIDXK];
+                            copiaContadorSETIDXK++;
+                        }
+                        int yeetSETIDXK = BitConverter.ToInt32(baitsSETIDXK, 0);
+                        //Console.WriteLine("{0}", yeetSETIDXK);
+                        contador += 4;
+                        break;
+                    case 19://PUSHI
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine("i:" + variables_generadas[varias[conta].Nombre]);
+                        pila_main.Push(variables_generadas[varias[conta].Nombre]);
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 20://PUSHD
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 21://PUSHS
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 22://PUSHAI
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 23://PUSHAD
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 24://PUSHAS
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 25://PUSHKI
+                        byte[] baitsPUSHKI = new byte[4];
+                        int copiaContadorPUSHKI;
+                        copiaContadorPUSHKI = contador + 1;
+                        for (int counter = 0; counter < 4; counter++)
+                        {
+                            baitsPUSHKI[counter] = segcod[copiaContadorPUSHKI];
+                            copiaContadorPUSHKI++;
+                        }
+                        int yeetPUSHKI = BitConverter.ToInt32(baitsPUSHKI, 0);
+                        //Console.WriteLine("{0}", yeetPUSHKI);
+                        pila_main.Push(yeetPUSHKI);//se inserta en la pila el valor int
+                        contador += 4;
+                        break;
+                    case 26://PUSHKD
+                        byte[] baitsPUSHKD = new byte[4];
+                        int copiaContadorPUSHKD;
+                        copiaContadorPUSHKD = contador + 1;
+                        for (int counter = 0; counter < 4; counter++)
+                        {
+                            baitsPUSHKD[counter] = segcod[copiaContadorPUSHKD];
+                            copiaContadorPUSHKD++;
+                        }
+                        int yeetPUSHKD = BitConverter.ToInt32(baitsPUSHKD, 0);
+                        //Console.WriteLine("{0}", yeetPUSHKD);
+                        contador += 8;
+                        break;
+                    case 27://PUSHKS
+                        int cantBytes = segcod[contador + 1];
+                        contador += 2;
+                        for (int contPUSHKS = 0; contPUSHKS < cantBytes; contPUSHKS++)
+                        {
+                            char c2 = Convert.ToChar(segcod[contador]);
+                            //Console.Write(c2);
+                            contador++;
+                        }
+                        contador--;
+                        //Console.WriteLine("");
+                        break;
+                    case 28://POPI
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+
+                        variables_generadas[varias[conta].Nombre] = int.Parse(pila_main.Pop().ToString());//se hace pop y se guarda en la variable
+
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 29://POPD
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 30://POPS
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 31://POPAI
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 32://POPAD
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 33://POPAS
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 34://POPIDX
+                        idx_array = int.Parse(pila_main.Pop().ToString());//se hace pop y se guarda en idx_array
+                        //Console.WriteLine("POPIDX: "+idx_array);
+                        break;
+                    case 35://READI
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 36://READD
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 37://READS
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 38://READAI
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //int intTemp = Convert.ToInt32(Console.ReadLine());//lee el numero que se ingresa en el teclado
+                        copiaArrayIntMV = (int[])variables_generadas[varias[conta].Nombre];//se guarda en una copia el arreglo del diccionario
+                        Console.Write("Inserte un valor para el arreglo {0} en [{1}]: ", varias[conta].Nombre, idx_array);
+                        copiaArrayIntMV[idx_array] = Convert.ToInt32(Console.ReadLine());//en el idx correspondiente del arreglo guarda el valor int ingresado
+                        variables_generadas[varias[conta].Nombre] = copiaArrayIntMV;//la copia modificada se vuelve a poner en el diccionario
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 39://READAD
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 40://READAS
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 41://PRTM
+                        int cantdeBytes = segcod[contador + 1];
+                        contador += 2;
+                        for (int contPUSHKS = 0; contPUSHKS < cantdeBytes; contPUSHKS++)
+                        {
+                            char c2 = Convert.ToChar(segcod[contador]);
+                            //Console.Write(c2);
+                            contador++;
+                        }
+                        contador--;
+                        //Console.WriteLine("");
+                        break;
+                    case 42://PRTI
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 43://PRTD
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 44://PRTS
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 45://PRTAI
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        copiaArrayIntMV = (int[])variables_generadas[varias[conta].Nombre];//se guarda en una copia el arreglo del diccionario
+                        Console.WriteLine("{0}[{1}]: {2} \n", varias[conta].Nombre, idx_array, copiaArrayIntMV[idx_array]);//imprime el elemento del arreglo en idx_array
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 46://PRTAD
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 47://PRTAS
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        //Console.WriteLine(varias[conta].Nombre);
+                        contador++;
+                        break;
+                    case 48://PRTLN
+                        break;
+                    case 49://HALT
+                        contador = tam_seg_cod;
+                        break;
+                    default:
+                        Console.WriteLine("ERROR");
+                        break;
+                }//switch
+            }//for
 
         }//static void main
     }//Program
