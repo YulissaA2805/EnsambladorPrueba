@@ -147,9 +147,9 @@ namespace EnsambladorPrueba
 
         private static Dictionary<string, int> variables = new Dictionary<string, int>();
 
-        private static Dictionary<string, int> etiquetas_def = new Dictionary<string, int>();
+        private static Dictionary<string, int> etiquetas_def = new Dictionary<string, int>();//nombre etiqueta, dir
 
-        private static Dictionary<int, string> etiquetas_refer = new Dictionary<int, string>();
+        private static Dictionary<int, string> etiquetas_refer = new Dictionary<int, string>();//tam_seg_cod
         //en etiquetas_ref la llave es la dir porque se pueden repetir las etiquetas
         static void Main(string[] args)
         {
@@ -918,6 +918,15 @@ namespace EnsambladorPrueba
 
             varias.Add(new Variable() { Nombre = varia, Direccion = tabla_var[cont].Direccion, Tipo = "", numeroElementos = "", vectorString = "" });
 
+            foreach(var etiquetad in etiquetas_def)
+            {
+                Console.WriteLine("EtiquetaDef {0}, {1}", etiquetad.Key, etiquetad.Value);
+            }
+            foreach (var etiquetaref in etiquetas_refer)
+            {
+                Console.WriteLine("EtiquetaRefer {0}, {1}", etiquetaref.Key, etiquetaref.Value);
+            }
+
 
             int conta;
             for (contador = 12; contador < tam_seg_cod; contador++)//recorre el array, compara con el codigo de cada instruccion
@@ -1341,16 +1350,81 @@ namespace EnsambladorPrueba
                 switch (segcod[contador])//Imprime la instruccion segun el codigo de operacion, y aumenta el espacio recorrido segun la instruccion
                 {
                     case 0://NOP
+                        //Console.WriteLine("--NOP--");
                         break;
                     case 1://ADD
+                        var add2 = pila_main.Pop();
+                        var add1 = pila_main.Pop();
+                        var add_res = new Object();
+                        if(add1.GetType().Equals(typeof(string)) || add2.GetType().Equals(typeof(string)))
+                        {//si alguno de los dos es string
+                            add_res = (string)add2 + (string)add1;
+                        }
+                        else if (add1.GetType().Equals(typeof(int)))//si el primero es int
+                        {
+                            add_res = (int)add2 + (int)add1;
+                        }
+                        else if (add1.GetType().Equals(typeof(double)))//si el primero es double
+                        {
+                            add_res = (double)add2 + (double)add1;
+                        }
+                        pila_main.Push(add_res);
                         break;
                     case 2://SUB
+                        var sub2 = pila_main.Pop();
+                        var sub1 = pila_main.Pop();
+                        var sub_res = new Object();
+                        if (sub1.GetType().Equals(typeof(int)))//si el primero es int
+                        {
+                            sub_res = (int)sub2 - (int)sub1;
+                        }
+                        else if (sub1.GetType().Equals(typeof(double)))//si el primero es double
+                        {
+                            sub_res = (double)sub2 - (double)sub1;
+                        }
+                        pila_main.Push(sub_res);
                         break;
                     case 3://MULT
+                        var mult2 = pila_main.Pop();
+                        var mult1 = pila_main.Pop();
+                        var mult_res = new Object();
+                        if (mult1.GetType().Equals(typeof(int)))//si el primero es int
+                        {
+                            mult_res = (int)mult2 * (int)mult1;
+                        }
+                        else if (mult1.GetType().Equals(typeof(double)))//si el primero es double
+                        {
+                            mult_res = (double)mult2 * (double)mult1;
+                        }
+                        pila_main.Push(mult_res);
                         break;
                     case 4://DIV
+                        var div2 = pila_main.Pop();
+                        var div1 = pila_main.Pop();
+                        var div_res = new Object();
+                        if (div1.GetType().Equals(typeof(int)))//si el primero es int
+                        {
+                            div_res = (int)div2 / (int)div1;
+                        }
+                        else if (div1.GetType().Equals(typeof(double)))//si el primero es double
+                        {
+                            div_res = (double)div2 / (double)div1;
+                        }
+                        pila_main.Push(div_res);
                         break;
                     case 5://MOD
+                        var mod2 = pila_main.Pop();
+                        var mod1 = pila_main.Pop();
+                        var mod_res = new Object();
+                        if (mod1.GetType().Equals(typeof(int)))//si el primero es int
+                        {
+                            mod_res = (int)mod2 % (int)mod1;
+                        }
+                        else if (mod1.GetType().Equals(typeof(double)))//si el primero es double
+                        {
+                            mod_res = (double)mod2 % (double)mod1;
+                        }
+                        pila_main.Push(mod_res);
                         break;
                     case 6://INC
                         contador++;
@@ -1369,56 +1443,202 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        variables_generadas[varias[conta].Nombre] = (int)variables_generadas[varias[conta].Nombre] - 1;
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
                     case 8://CMPEQ
+                        var cmpeq2 = pila_main.Pop();//se guarda el valor del tope de la pila en cmpeq2
+                        var cmpeq1 = pila_main.Pop();//se guarda el siguiente valor del tope de la pila en cmpeq1
+                        if (cmpeq1.GetType().Equals(typeof(double)))
+                        {
+                            if ((double)cmpeq1 == (double)cmpeq2)
+                            {
+                                boolean_main = true;
+                            }
+                            else
+                            {
+                                boolean_main = false;
+                            }
+                        }
+                        else if (cmpeq1.GetType().Equals(typeof(int)))
+                        {
+                            if ((int)cmpeq1 == (int)cmpeq2)
+                            {
+                                boolean_main = true;
+                            }
+                            else
+                            {
+                                boolean_main = false;
+                            }
+                        }
                         break;
                     case 9://CMPNE
+                        var cmpne2 = pila_main.Pop();//se guarda el valor del tope de la pila en cmpne2
+                        var cmpne1 = pila_main.Pop();//se guarda el siguiente valor del tope de la pila en cmpne1
+                        if (cmpne1.GetType().Equals(typeof(double)))
+                        {
+                            if ((double)cmpne1 != (double)cmpne2)
+                            {
+                                boolean_main = true;
+                            }
+                            else
+                            {
+                                boolean_main = false;
+                            }
+                        }
+                        else if (cmpne1.GetType().Equals(typeof(int)))
+                        {
+                            if ((int)cmpne1 != (int)cmpne2)
+                            {
+                                boolean_main = true;
+                            }
+                            else
+                            {
+                                boolean_main = false;
+                            }
+                        }
                         break;
                     case 10://CMPLT
-                        int cmplt2 = (int)pila_main.Pop();//se guarda el int del tope de la pila en cmplt2
-                        int cmplt1 = (int)pila_main.Pop();//se guarda el siguiente int del tope de la pila en cmplt1
+                        var cmplt2 = pila_main.Pop();//se guarda el valor del tope de la pila en cmplt2
+                        var cmplt1 = pila_main.Pop();//se guarda el siguiente valor del tope de la pila en cmplt1
                         //Console.WriteLine("cmplt1: {0}, cmplt2: {1}", cmplt1, cmplt2);
-                        if(cmplt1 < cmplt2)
+                        if (cmplt1.GetType().Equals(typeof(double)))
                         {
-                            boolean_main = true;
+                            if ((double)cmplt1 < (double)cmplt2)
+                            {
+                                boolean_main = true;
+                            }
+                            else
+                            {
+                                boolean_main = false;
+                            }
                         }
-                        else
+                        else if (cmplt1.GetType().Equals(typeof(int)))
                         {
-                            boolean_main = false;
+                            if ((int)cmplt1 < (int)cmplt2)
+                            {
+                                boolean_main = true;
+                            }
+                            else
+                            {
+                                boolean_main = false;
+                            }
+                            //Console.WriteLine("bool en JMPT: " + boolean_main);
                         }
                         break;
                     case 11://CMPLE
+                        var cmple2 = pila_main.Pop();//se guarda el valor del tope de la pila en cmple2
+                        var cmple1 = pila_main.Pop();//se guarda el siguiente valor del tope de la pila en cmple1
+                        if (cmple1.GetType().Equals(typeof(double)))
+                        {
+                            if ((double)cmple1 <= (double)cmple2)
+                            {
+                                boolean_main = true;
+                            }
+                            else
+                            {
+                                boolean_main = false;
+                            }
+                        }
+                        else if (cmple1.GetType().Equals(typeof(int)))
+                        {
+                            if ((int)cmple1 <= (int)cmple2)
+                            {
+                                boolean_main = true;
+                            }
+                            else
+                            {
+                                boolean_main = false;
+                            }
+                        }
                         break;
                     case 12://CMPGT
+                        var cmpgt2 = pila_main.Pop();//se guarda el valor del tope de la pila en cmpgt2
+                        var cmpgt1 = pila_main.Pop();//se guarda el siguiente valor del tope de la pila en cmpgt1
+                        if (cmpgt1.GetType().Equals(typeof(double)))
+                        {
+                            if ((double)cmpgt1 > (double)cmpgt2)
+                            {
+                                boolean_main = true;
+                            }
+                            else
+                            {
+                                boolean_main = false;
+                            }
+                        }
+                        else if (cmpgt1.GetType().Equals(typeof(int)))
+                        {
+                            if ((int)cmpgt1 > (int)cmpgt2)
+                            {
+                                boolean_main = true;
+                            }
+                            else
+                            {
+                                boolean_main = false;
+                            }
+                        }
                         break;
                     case 13://CMPGE
+                        var cmpge2 = pila_main.Pop();//se guarda el valor del tope de la pila en cmpge2
+                        var cmpge1 = pila_main.Pop();//se guarda el siguiente valor del tope de la pila en cmpge1
+                        if (cmpge1.GetType().Equals(typeof(double)))
+                        {
+                            if ((double)cmpge1 >= (double)cmpge2)
+                            {
+                                boolean_main = true;
+                            }
+                            else
+                            {
+                                boolean_main = false;
+                            }
+                        }
+                        else if (cmpge1.GetType().Equals(typeof(int)))
+                        {
+                            if ((int)cmpge1 >= (int)cmpge2)
+                            {
+                                boolean_main = true;
+                            }
+                            else
+                            {
+                                boolean_main = false;
+                            }
+                        }
                         break;
                     case 14://JMP
-                        contador++;
+                        contador++;//se mueve al byte de la linea a la que se salta con JMP
+                        contador = (segcod[contador] + 12);
                         //Console.Write(segcod[contador] + "\n");
-                        contador++;
+                        //contador++;
                         break;
                     case 15://JMPT
                         contador++;//se mueve al byte de la linea a la que se salta con JMPT
                         //Console.WriteLine("bool: "+boolean_main);
                         //Console.WriteLine("idx_array: " + idx_array);
-                        //Console.WriteLine("segcod: " + (segcod[contador]+11));
+                        //Console.WriteLine("segcod: " + (segcod[contador]));
                         if (boolean_main)
                         {
-                            contador = (segcod[contador]+11);
+                            contador = (segcod[contador]+12);
                         }
                         else
                         {
-                            contador++;
+                            contador++;//se salta el byte que queda de la linea que se tiene que saltar (son 2 bytes en total)
                         }
+                        //Console.WriteLine("contador: " + contador);
+                        //Console.WriteLine("segcod: " + (segcod[contador]));
                         //Console.Write(segcod[contador] + "\n");
                         break;
                     case 16://JMPF
-                        contador++;
+                        contador++;//se mueve al byte de la linea a la que se salta con JMPF
                         //Console.Write(segcod[contador] + "\n");
-                        contador++;
+                        if (boolean_main == false)
+                        {
+                            contador = (segcod[contador] + 12);
+                        }
+                        else
+                        {
+                            contador++;//se salta el byte que queda de la linea que se tiene que saltar (son 2 bytes en total)
+                        }
                         break;
                     case 17://SETIDX
                         contador += 2;
@@ -1444,6 +1664,7 @@ namespace EnsambladorPrueba
                         }
                         //Console.WriteLine("i:" + variables_generadas[varias[conta].Nombre]);
                         pila_main.Push(variables_generadas[varias[conta].Nombre]);
+                        //Console.WriteLine("------PUSHI");
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1539,7 +1760,7 @@ namespace EnsambladorPrueba
                         }
 
                         variables_generadas[varias[conta].Nombre] = int.Parse(pila_main.Pop().ToString());//se hace pop y se guarda en la variable
-
+                        Console.WriteLine("------------------POPI");
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
