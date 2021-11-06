@@ -153,7 +153,7 @@ namespace EnsambladorPrueba
         //en etiquetas_ref la llave es la dir porque se pueden repetir las etiquetas
         static void Main(string[] args)
         {
-            string path = @"C:/Users/93764/Desktop/pruebas bin/prueba texto 2 en ase.ASE";//La ruta cambia dependiendo de la computadora
+            string path = @"C:/Users/93764/Desktop/pruebas bin/prueba texto 4 en ase.ASE";//La ruta cambia dependiendo de la computadora
             //ruta 1:@"C:/Users/93764/Desktop/pruebas bin/prueba texto 2 en ase.ASE"
             //ruta 2:@"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/prueba texto 2 en ase.ASE"
             //ruta 3:@"C:/Users/ludmi/Downloads/prueba-texto-2-en-ase.ASE"
@@ -197,7 +197,7 @@ namespace EnsambladorPrueba
 
             BinaryWriter bw;
 
-            bw = new BinaryWriter(new FileStream("C:/Users/93764/Desktop/pruebas bin/probando stn.STN", FileMode.Create));
+            bw = new BinaryWriter(new FileStream("C:/Users/93764/Desktop/pruebas bin/probando stn 4.STN", FileMode.Create));
             //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stn.STN"
             //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN"
             //ruta destino 3:"C:/Users/ludmi/Downloads/probando stn.STN"
@@ -608,10 +608,18 @@ namespace EnsambladorPrueba
                             break;
                         case "PRTM"://
                             bw.Write((byte)instrucciones["PRTM"].Codigo);
-                            bw.Write((byte)palabras_linea[j + 1].Length);//escribe cuántas letras tiene el mensaje
+                            string[] copiaLineasPRTM = lineas[i].Split("PRTM ");
+                            copiaLineasPRTM[1] = copiaLineasPRTM[1].Replace("\"","");
+                            //Console.WriteLine("STRING SEPARADO: " + copiaLineasPRTM[1].Length);
+                            //foreach(char aux in copiaLineasPRTM[1])
+                            //{
+                            //    Console.Write("-"+aux);
+                            //}
+                            //Console.WriteLine();
+                            bw.Write((byte)copiaLineasPRTM[1].Length);//escribe cuántas letras tiene el mensaje
                             tam_seg_cod += 2;
                             dir += 2;
-                            foreach (char c in palabras_linea[j + 1]) //+n bytes
+                            foreach (char c in copiaLineasPRTM[1]) //+n bytes
                             {
                                 bw.Write((byte)c);
                                 tam_seg_cod++;
@@ -710,7 +718,7 @@ namespace EnsambladorPrueba
 
             bw.Close();
 
-            string path2 = "C:/Users/93764/Desktop/pruebas bin/probando stn.STN";
+            string path2 = "C:/Users/93764/Desktop/pruebas bin/probando stn 4.STN";
             //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stn.STN"
             //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN"
             //ruta destino 3:"C:/Users/ludmi/Downloads/probando stn.STN"
@@ -874,7 +882,7 @@ namespace EnsambladorPrueba
                     acum += VS;
                 }
             }
-            string path3 = "C:/Users/93764/Desktop/pruebas bin/probando stnv.STNV";
+            string path3 = "C:/Users/93764/Desktop/pruebas bin/probando stnv 4.STNV";
             //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stnv.STNV"
             //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stnv.STNV"
             //ruta destino 3:"C:/Users/ludmi/Downloads/probando stnv.STNV"
@@ -1511,7 +1519,7 @@ namespace EnsambladorPrueba
                     case 10://CMPLT
                         var cmplt2 = pila_main.Pop();//se guarda el valor del tope de la pila en cmplt2
                         var cmplt1 = pila_main.Pop();//se guarda el siguiente valor del tope de la pila en cmplt1
-                        Console.WriteLine("cmplt1: {0}, cmplt2: {1}", cmplt1, cmplt2);
+                        //Console.WriteLine("cmplt1: {0}, cmplt2: {1}", cmplt1, cmplt2);
                         if (cmplt1.GetType().Equals(typeof(double)))
                         {
                             if ((double)cmplt1 < (double)cmplt2)
@@ -1533,7 +1541,7 @@ namespace EnsambladorPrueba
                             {
                                 boolean_main = false;
                             }
-                            Console.WriteLine("bool en JMPT: " + boolean_main);
+                            //Console.WriteLine("bool en JMPT: " + boolean_main);
                         }
                         break;
                     case 11://CMPLE
@@ -1883,7 +1891,7 @@ namespace EnsambladorPrueba
                         }
                         //int intTemp = Convert.ToInt32(Console.ReadLine());//lee el numero que se ingresa en el teclado
                         copiaArrayIntMV = (int[])variables_generadas[varias[conta].Nombre];//se guarda en una copia el arreglo del diccionario
-                        Console.Write("Inserte un valor para el arreglo {0} en [{1}]: ", varias[conta].Nombre, idx_array);
+                        //Console.Write("Inserte un valor para el arreglo {0} en [{1}]: ", varias[conta].Nombre, idx_array);
                         copiaArrayIntMV[idx_array] = Convert.ToInt32(Console.ReadLine());//en el idx correspondiente del arreglo guarda el valor int ingresado
                         variables_generadas[varias[conta].Nombre] = copiaArrayIntMV;//la copia modificada se vuelve a poner en el diccionario
                         //Console.WriteLine(varias[conta].Nombre);
@@ -1896,7 +1904,7 @@ namespace EnsambladorPrueba
                             conta++;
                         }
                         copiaArrayDoubleMV = (double[])variables_generadas[varias[conta].Nombre];//se guarda en una copia el arreglo del diccionario
-                        Console.Write("Inserte un valor para el arreglo {0} en [{1}]: ", varias[conta].Nombre, idx_array);
+                        //Console.Write("Inserte un valor para el arreglo {0} en [{1}]: ", varias[conta].Nombre, idx_array);
                         copiaArrayDoubleMV[idx_array] = Convert.ToDouble(Console.ReadLine());//en el idx correspondiente del arreglo guarda el valor int ingresado
                         variables_generadas[varias[conta].Nombre] = copiaArrayDoubleMV;//la copia modificada se vuelve a poner en el diccionario
                         //Console.WriteLine(varias[conta].Nombre);
@@ -1909,7 +1917,7 @@ namespace EnsambladorPrueba
                             conta++;
                         }
                         copiaArrayStringMV = (string[])variables_generadas[varias[conta].Nombre];//se guarda en una copia el arreglo del diccionario
-                        Console.Write("Inserte un valor para el arreglo {0} en [{1}]: ", varias[conta].Nombre, idx_array);
+                        //Console.Write("Inserte un valor para el arreglo {0} en [{1}]: ", varias[conta].Nombre, idx_array);
                         copiaArrayStringMV[idx_array] = Convert.ToString(Console.ReadLine());//en el idx correspondiente del arreglo guarda el valor int ingresado
                         variables_generadas[varias[conta].Nombre] = copiaArrayStringMV;//la copia modificada se vuelve a poner en el diccionario
                         contador++;
@@ -1966,7 +1974,8 @@ namespace EnsambladorPrueba
                             conta++;
                         }
                         copiaArrayIntMV = (int[])variables_generadas[varias[conta].Nombre];//se guarda en una copia el arreglo del diccionario
-                        Console.WriteLine("{0}[{1}]: {2} \n", varias[conta].Nombre, idx_array, copiaArrayIntMV[idx_array]);//imprime el elemento del arreglo en idx_array
+                        //Console.WriteLine("{0}[{1}]: {2} \n", varias[conta].Nombre, idx_array, copiaArrayIntMV[idx_array]);//imprime el elemento del arreglo en idx_array
+                        Console.Write(copiaArrayIntMV[idx_array]);//imprime el elemento del arreglo en idx_array
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1977,7 +1986,7 @@ namespace EnsambladorPrueba
                             conta++;
                         }
                         copiaArrayDoubleMV = (double[])variables_generadas[varias[conta].Nombre];//se guarda en una copia el arreglo del diccionario
-                        Console.WriteLine("{0}[{1}]: {2} \n", varias[conta].Nombre, idx_array, copiaArrayDoubleMV[idx_array]);//imprime el elemento del arreglo en idx_array
+                        Console.Write(copiaArrayDoubleMV[idx_array]);//imprime el elemento del arreglo en idx_array
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1988,7 +1997,7 @@ namespace EnsambladorPrueba
                             conta++;
                         }
                         copiaArrayStringMV = (string[])variables_generadas[varias[conta].Nombre];//se guarda en una copia el arreglo del diccionario
-                        Console.WriteLine("{0}[{1}]: {2} \n", varias[conta].Nombre, idx_array, copiaArrayStringMV[idx_array]);//imprime el elemento del arreglo en idx_array
+                        Console.Write(copiaArrayStringMV[idx_array]);//imprime el elemento del arreglo en idx_array
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
