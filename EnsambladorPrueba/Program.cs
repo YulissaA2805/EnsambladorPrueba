@@ -1010,7 +1010,13 @@ namespace EnsambladorPrueba
                         break;
                     case 17:
                         Console.WriteLine("SETIDX");
-                        contador += 2;
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        Console.WriteLine(varias[conta].Nombre);
+                        contador++;
                         break;
                     case 18:
                         Console.WriteLine("SETIDXK");
@@ -1343,6 +1349,8 @@ namespace EnsambladorPrueba
             int idx_array = 0;
             bool boolean_main = false;
             int[] copiaArrayIntMV;
+            double[] copiaArrayDoubleMV;
+            string[] copiaArrayStringMV;
 
             for (contador = 12; contador < tam_seg_cod; contador++)//recorre el array, compara con el codigo de cada instruccion
             {                                                     //y simula lo que debe realizar la instrucción
@@ -1436,6 +1444,7 @@ namespace EnsambladorPrueba
                         //Console.WriteLine(variables_generadas[varias[conta].Nombre]);
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
+                        
                         break;
                     case 7://DEC
                         contador++;
@@ -1502,7 +1511,7 @@ namespace EnsambladorPrueba
                     case 10://CMPLT
                         var cmplt2 = pila_main.Pop();//se guarda el valor del tope de la pila en cmplt2
                         var cmplt1 = pila_main.Pop();//se guarda el siguiente valor del tope de la pila en cmplt1
-                        //Console.WriteLine("cmplt1: {0}, cmplt2: {1}", cmplt1, cmplt2);
+                        Console.WriteLine("cmplt1: {0}, cmplt2: {1}", cmplt1, cmplt2);
                         if (cmplt1.GetType().Equals(typeof(double)))
                         {
                             if ((double)cmplt1 < (double)cmplt2)
@@ -1524,7 +1533,7 @@ namespace EnsambladorPrueba
                             {
                                 boolean_main = false;
                             }
-                            //Console.WriteLine("bool en JMPT: " + boolean_main);
+                            Console.WriteLine("bool en JMPT: " + boolean_main);
                         }
                         break;
                     case 11://CMPLE
@@ -1607,7 +1616,7 @@ namespace EnsambladorPrueba
                         break;
                     case 14://JMP
                         contador++;//se mueve al byte de la linea a la que se salta con JMP
-                        contador = (segcod[contador] + 12);
+                        contador = (segcod[contador] + 11);//11 y no 12 bytes porque el for ya hace un contador++
                         //Console.Write(segcod[contador] + "\n");
                         //contador++;
                         break;
@@ -1615,17 +1624,17 @@ namespace EnsambladorPrueba
                         contador++;//se mueve al byte de la linea a la que se salta con JMPT
                         //Console.WriteLine("bool: "+boolean_main);
                         //Console.WriteLine("idx_array: " + idx_array);
-                        //Console.WriteLine("segcod: " + (segcod[contador]));
+                        //Console.WriteLine("segcod en JMPT: " + (segcod[contador]));
                         if (boolean_main)
                         {
-                            contador = (segcod[contador]+12);
+                            contador = (segcod[contador]+11);//11 y no 12 bytes porque el for ya hace un contador++
                         }
                         else
                         {
                             contador++;//se salta el byte que queda de la linea que se tiene que saltar (son 2 bytes en total)
                         }
                         //Console.WriteLine("contador: " + contador);
-                        //Console.WriteLine("segcod: " + (segcod[contador]));
+                        //Console.WriteLine("segcod en JMPT (2): " + (segcod[contador]));
                         //Console.Write(segcod[contador] + "\n");
                         break;
                     case 16://JMPF
@@ -1633,7 +1642,7 @@ namespace EnsambladorPrueba
                         //Console.Write(segcod[contador] + "\n");
                         if (boolean_main == false)
                         {
-                            contador = (segcod[contador] + 12);
+                            contador = (segcod[contador] + 11);//11 y no 12 bytes porque el for ya hace un contador++
                         }
                         else
                         {
@@ -1641,7 +1650,13 @@ namespace EnsambladorPrueba
                         }
                         break;
                     case 17://SETIDX
-                        contador += 2;
+                        contador++;
+                        while (segcod[contador] != varias[conta].Direccion)
+                        {
+                            conta++;
+                        }
+                        idx_array = (int)variables_generadas[varias[conta].Nombre];
+                        contador++;
                         break;
                     case 18://SETIDXK
                         byte[] baitsSETIDXK = new byte[4];
@@ -1654,6 +1669,7 @@ namespace EnsambladorPrueba
                         }
                         int yeetSETIDXK = BitConverter.ToInt32(baitsSETIDXK, 0);
                         //Console.WriteLine("{0}", yeetSETIDXK);
+                        idx_array = yeetSETIDXK;
                         contador += 4;
                         break;
                     case 19://PUSHI
@@ -1666,7 +1682,10 @@ namespace EnsambladorPrueba
                         pila_main.Push(variables_generadas[varias[conta].Nombre]);
                         //Console.WriteLine("------PUSHI");
                         //Console.WriteLine(varias[conta].Nombre);
+                        //Console.WriteLine("segcod[contador] en PUSHI: " + segcod[contador]);
                         contador++;
+                        //Console.WriteLine("segcod[contador] en PUSHI(2): " + segcod[contador]);
+                        //Console.WriteLine(varias[conta].Nombre);
                         break;
                     case 20://PUSHD
                         contador++;
@@ -1674,6 +1693,7 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        pila_main.Push(variables_generadas[varias[conta].Nombre]);
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1683,6 +1703,7 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        pila_main.Push(variables_generadas[varias[conta].Nombre]);
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1692,6 +1713,7 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        pila_main.Push((int[])variables_generadas[varias[conta].Nombre]);
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1701,6 +1723,7 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        pila_main.Push((double[])variables_generadas[varias[conta].Nombre]);
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1710,6 +1733,7 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        pila_main.Push((string[])variables_generadas[varias[conta].Nombre]);
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1736,19 +1760,23 @@ namespace EnsambladorPrueba
                             baitsPUSHKD[counter] = segcod[copiaContadorPUSHKD];
                             copiaContadorPUSHKD++;
                         }
-                        int yeetPUSHKD = BitConverter.ToInt32(baitsPUSHKD, 0);
+                        double yeetPUSHKD = BitConverter.ToDouble(baitsPUSHKD, 0);
                         //Console.WriteLine("{0}", yeetPUSHKD);
+                        pila_main.Push(yeetPUSHKD);//se inserta en la pila el valor double
                         contador += 8;
                         break;
                     case 27://PUSHKS
                         int cantBytes = segcod[contador + 1];
                         contador += 2;
+                        string yeetPUSHKS = "";
                         for (int contPUSHKS = 0; contPUSHKS < cantBytes; contPUSHKS++)
                         {
                             char c2 = Convert.ToChar(segcod[contador]);
                             //Console.Write(c2);
+                            yeetPUSHKS += c2;
                             contador++;
                         }
+                        pila_main.Push(yeetPUSHKS);//se inserta en la pila el valor string
                         contador--;
                         //Console.WriteLine("");
                         break;
@@ -1758,9 +1786,8 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
-
                         variables_generadas[varias[conta].Nombre] = int.Parse(pila_main.Pop().ToString());//se hace pop y se guarda en la variable
-                        Console.WriteLine("------------------POPI");
+                        //Console.WriteLine("------------------POPI");
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1770,6 +1797,7 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        variables_generadas[varias[conta].Nombre] = double.Parse(pila_main.Pop().ToString());//se hace pop y se guarda en la variable
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1779,6 +1807,7 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        variables_generadas[varias[conta].Nombre] = pila_main.Pop().ToString();//se hace pop y se guarda en la variable
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1788,6 +1817,7 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        variables_generadas[varias[conta].Nombre] = (int[])pila_main.Pop();//se hace pop y se guarda en la variable
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1797,6 +1827,7 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        variables_generadas[varias[conta].Nombre] = (double[])pila_main.Pop();//se hace pop y se guarda en la variable
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1806,6 +1837,7 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        variables_generadas[varias[conta].Nombre] = (string[])pila_main.Pop();//se hace pop y se guarda en la variable
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1819,6 +1851,7 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        variables_generadas[varias[conta].Nombre] = Convert.ToInt32(Console.ReadLine());
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1828,6 +1861,7 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        variables_generadas[varias[conta].Nombre] = Convert.ToDouble(Console.ReadLine());
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1837,6 +1871,7 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        variables_generadas[varias[conta].Nombre] = Convert.ToString(Console.ReadLine());
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1860,6 +1895,10 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        copiaArrayDoubleMV = (double[])variables_generadas[varias[conta].Nombre];//se guarda en una copia el arreglo del diccionario
+                        Console.Write("Inserte un valor para el arreglo {0} en [{1}]: ", varias[conta].Nombre, idx_array);
+                        copiaArrayDoubleMV[idx_array] = Convert.ToDouble(Console.ReadLine());//en el idx correspondiente del arreglo guarda el valor int ingresado
+                        variables_generadas[varias[conta].Nombre] = copiaArrayDoubleMV;//la copia modificada se vuelve a poner en el diccionario
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1869,8 +1908,14 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
-                        //Console.WriteLine(varias[conta].Nombre);
+                        copiaArrayStringMV = (string[])variables_generadas[varias[conta].Nombre];//se guarda en una copia el arreglo del diccionario
+                        Console.Write("Inserte un valor para el arreglo {0} en [{1}]: ", varias[conta].Nombre, idx_array);
+                        copiaArrayStringMV[idx_array] = Convert.ToString(Console.ReadLine());//en el idx correspondiente del arreglo guarda el valor int ingresado
+                        variables_generadas[varias[conta].Nombre] = copiaArrayStringMV;//la copia modificada se vuelve a poner en el diccionario
                         contador++;
+
+                        //Console.WriteLine("segcod[contador] en READAS: " + segcod[contador]);
+                        //Console.WriteLine(varias[conta].Nombre);
                         break;
                     case 41://PRTM
                         int cantdeBytes = segcod[contador + 1];
@@ -1878,7 +1923,7 @@ namespace EnsambladorPrueba
                         for (int contPUSHKS = 0; contPUSHKS < cantdeBytes; contPUSHKS++)
                         {
                             char c2 = Convert.ToChar(segcod[contador]);
-                            //Console.Write(c2);
+                            Console.Write(c2);
                             contador++;
                         }
                         contador--;
@@ -1890,6 +1935,7 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        Console.Write(varias[conta]);
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1899,6 +1945,7 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        Console.Write(varias[conta]);
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1908,6 +1955,7 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        Console.Write(varias[conta]);
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1928,6 +1976,8 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        copiaArrayDoubleMV = (double[])variables_generadas[varias[conta].Nombre];//se guarda en una copia el arreglo del diccionario
+                        Console.WriteLine("{0}[{1}]: {2} \n", varias[conta].Nombre, idx_array, copiaArrayDoubleMV[idx_array]);//imprime el elemento del arreglo en idx_array
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
@@ -1937,10 +1987,13 @@ namespace EnsambladorPrueba
                         {
                             conta++;
                         }
+                        copiaArrayStringMV = (string[])variables_generadas[varias[conta].Nombre];//se guarda en una copia el arreglo del diccionario
+                        Console.WriteLine("{0}[{1}]: {2} \n", varias[conta].Nombre, idx_array, copiaArrayStringMV[idx_array]);//imprime el elemento del arreglo en idx_array
                         //Console.WriteLine(varias[conta].Nombre);
                         contador++;
                         break;
                     case 48://PRTLN
+                        Console.WriteLine();
                         break;
                     case 49://HALT
                         contador = tam_seg_cod;
