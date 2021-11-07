@@ -153,6 +153,31 @@ namespace EnsambladorPrueba
         //en etiquetas_ref la llave es la dir porque se pueden repetir las etiquetas
         static void Main(string[] args)
         {
+            //Aquí empieza Compilador
+            string path0 = @"C:/Users/93764/Desktop/pruebas bin/cflat test 1.txt";//La ruta cambia dependiendo de la computadora
+            //ruta 1: @"C:/Users/93764/Desktop/pruebas bin/cflat test 1.txt"
+            //ruta 2:
+            //ruta 3:
+
+            byte[] readTXT = File.ReadAllBytes(path0);
+            //para crear el archivo (txt a CFT)
+            try
+            {
+                File.WriteAllBytes("C:/Users/93764/Desktop/pruebas bin/cflat test 1 en CFT.CFT", readTXT);
+                Console.WriteLine("\n Archivo .CFT creado con éxito.");
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine(e.Message + "\n No se puede crear el archivo CFT.");
+                return;
+            }
+
+            //Aquí empieza analizador léxico que va a crear los tokens
+
+            //Aquí empieza analizador semántico que revisará el orden de los tokens, si no es correcto imprime error y el programa no continuará
+
+            //Si todo está correcto los tokens se convierten en lenguaje ensamblador y se crea el archivo ASE
+
             string path = @"C:/Users/93764/Desktop/pruebas bin/prueba texto 4 en ase.ASE";//La ruta cambia dependiendo de la computadora
             //ruta 1:@"C:/Users/93764/Desktop/pruebas bin/prueba texto 2 en ase.ASE"
             //ruta 2:@"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/prueba texto 2 en ase.ASE"
