@@ -7,6 +7,16 @@ namespace EnsambladorPrueba
 {
     class Program
     {
+        class Token
+        {
+            public string Tipo { get; set; }
+            public string Lexema { get; set; }
+            public int Dir { get; set; }
+            public override string ToString()
+            {
+                return "Tipo: " + Tipo + "   Lexema: " + Lexema + "   Dir: "+Dir;
+            }
+        }
         class Instruccion
         {
 
@@ -145,12 +155,30 @@ namespace EnsambladorPrueba
 
         private static List<Variable> tabla_var = new List<Variable>();
 
+        private static List<Token> tabla_tokens = new List<Token>();
+
+        private static List<string> lista_errores = new List<string>();
+
         private static Dictionary<string, int> variables = new Dictionary<string, int>();
 
         private static Dictionary<string, int> etiquetas_def = new Dictionary<string, int>();//nombre etiqueta, dir
 
         private static Dictionary<int, string> etiquetas_refer = new Dictionary<int, string>();//tam_seg_cod
         //en etiquetas_ref la llave es la dir porque se pueden repetir las etiquetas
+
+        public static bool EsNombreDeVariable(string lexema)
+        {
+            bool encontrado = false;
+            foreach(Token t in tabla_tokens)
+            {
+                if(t.Lexema == lexema)
+                {
+                    encontrado = true;
+                }
+            }
+            return encontrado;
+        }
+
         static void Main(string[] args)
         {
             //Aquí empieza Compilador
@@ -174,9 +202,266 @@ namespace EnsambladorPrueba
 
             //Aquí empieza analizador léxico que va a crear los tokens
 
+            byte[] readCFT = File.ReadAllBytes("C:/Users/93764/Desktop/pruebas bin/cflat test 1 en CFT.CFT");
+            //ruta 1:"C:/Users/93764/Desktop/pruebas bin/cflat test 1 en CFT.CFT"
+            //ruta 2:
+            //ruta 3:
+
+            Encoding ascii = Encoding.ASCII;
+            string asciiCFT = ascii.GetString(readCFT);
+
+            var lineasCFT = asciiCFT.Split(new[] { "\r\n", "\r", "\n"}, StringSplitOptions.None);
+
+            //Console.WriteLine("Contenido del archivo CFT:\n" + asciiCFT);
+
+            foreach (string st in lineasCFT)
+            {
+                Console.WriteLine(st.Trim());
+            }
+            Console.WriteLine();
+
+            //for (var i = 0; i < lineasCFT.Length; i++)//recorre cada línea
+            //{
+            //    Console.WriteLine(lineasCFT[i]);
+            //    string nuevo_token = "";
+            //    foreach(char cft in lineasCFT[i])
+            //    {
+            //        Console.Write(cft+" ");
+            //        if (Char.IsWhiteSpace(cft))
+            //        {
+            //        }
+            //    }
+            //    Console.WriteLine();
+            //}
+
+            char cft;
+            string nuevo_lexema = "";
+            int estado = 0;//estado del autómata del analizador léxico
+            //int numLinea = 1;
+            for(var i=0; i<lineasCFT.Length; i++)//lee todo el código CFT de entrada, linea por linea
+            {//i es número de línea
+
+                string filaCFT = lineasCFT[i].Trim() + " ";//el espacio es un auxiliar para identificar tokens más fácil
+                estado = 0;//cada vez que inicia de nuevo la línea, el estado es 0
+
+                for(var j=0; j<filaCFT.Length; j++)//lee cada char de cada linea
+                {//j es número de char (columna)
+
+                    cft = filaCFT[j];//se revisa cada char del código CFT
+                    //Console.WriteLine("estado: " + estado);
+                    switch (estado)
+                    {
+                        case 0://inicial, es dígito o letra?
+                            if (Char.IsDigit(cft))
+                            {
+                                nuevo_lexema += cft;
+                                estado = 1;
+                            }
+                            else if (Char.IsLetter(cft))
+                            {
+                                nuevo_lexema += cft;
+                                estado = 3;
+                            }
+                            //else if(cft == '+')
+                            //{
+                            //    nuevo_lexema += cft;
+                            //    estado = 4;
+                            //}
+                            else if (cft == '"')
+                            {
+                                nuevo_lexema += cft;
+                                estado = 5;
+                            }
+                            else if(cft == ' ')
+                            {
+                                estado = 0;
+                            }
+                            else if(cft == ';')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "DELIMITADOR", Lexema = nuevo_lexema, Dir = i });
+                                estado = 0;
+                                nuevo_lexema = "";
+                            }
+                            else if(cft == '[')
+                            {
+                                nuevo_lexema += cft;
+                                estado = 0;
+                            }
+                            else if (cft == ']')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "ARRAY", Lexema = nuevo_lexema, Dir = i });
+                                estado = 0;
+                                nuevo_lexema = "";
+                            }
+                            else
+                            {
+                                estado = -1;
+                                j--;
+                            }
+                            break;
+                        case 1://dígito, continúa (int) o tiene punto (double)?
+                            if (Char.IsDigit(cft))
+                            {
+                                nuevo_lexema += cft;
+                                estado = 1;
+                            }
+                            else if (cft == '.')
+                            {
+                                nuevo_lexema += cft;
+                                estado = 2;
+                            }
+                            //else if(cft == ']')
+                            //{
+                            //    nuevo_lexema += cft;
+                            //    tabla_tokens.Add(new Token() { Tipo = "ARRAY_INT", Lexema = nuevo_lexema, Dir = i });
+                            //    nuevo_lexema = "";
+                            //    estado = 0;
+                            //}
+                            else
+                            {
+                                //nuevo_lexema += cft;
+                                j--;
+                                estado = 0;
+                            }
+                            break;
+                        case 2://double
+                            if (Char.IsDigit(cft))
+                            {
+                                nuevo_lexema += cft;
+                                estado = 2;
+                            }
+                            else
+                            {
+                                tabla_tokens.Add(new Token() { Tipo = "DOUBLE", Lexema = nuevo_lexema, Dir = i });
+                                j--;//para que se regrese a leer el caracter que no se añadió al siguiente lexema
+                                nuevo_lexema = "";
+                            }
+                            break;
+                        case 3://letra, es palabra reservada, nombre (identificador) o variable?
+                            if (Char.IsLetterOrDigit(cft) || cft == '_')
+                            {
+                                nuevo_lexema += cft;
+                                estado = 3;
+                                
+                                
+                                //else if(nuevo_lexema == "PRINT")
+                                //{
+
+                                //}
+                                //else if(nuevo_lexema == "PRINTNL")
+                                //{
+
+                                //}
+                                
+                            }
+                            else
+                            {
+                                bool esNombre = EsNombreDeVariable(nuevo_lexema);
+                                if (esNombre)//es una variable
+                                {
+                                    tabla_tokens.Add(new Token() { Tipo = "variable", Lexema = nuevo_lexema, Dir = i });
+                                    nuevo_lexema = "";
+                                    j--;
+                                    estado = 0;
+                                }
+                                else//es una palabra reservada (instrucción o tipo) o un identificador (nueva variable)?
+                                {
+                                    if (nuevo_lexema == "START")
+                                    {
+                                        tabla_tokens.Add(new Token() { Tipo = "START", Lexema = nuevo_lexema, Dir = i });
+                                        nuevo_lexema = "";
+                                        j--;
+                                        estado = 0;
+                                    }
+                                    else if (nuevo_lexema == "END")
+                                    {
+                                        tabla_tokens.Add(new Token() { Tipo = "END", Lexema = nuevo_lexema, Dir = i });
+                                        nuevo_lexema = "";
+                                        j--;
+                                        estado = 0;
+                                    }
+                                    else if (nuevo_lexema == "READ" || nuevo_lexema == "IF" || nuevo_lexema == "ELSE"
+                                        || nuevo_lexema == "FOR" || nuevo_lexema == "WHILE"
+                                        || nuevo_lexema == "PRINT" || nuevo_lexema == "PRINTNL")
+                                    {
+                                        tabla_tokens.Add(new Token() { Tipo = "INSTRUCTION", Lexema = nuevo_lexema, Dir = i });
+                                        nuevo_lexema = "";
+                                        j--;
+                                        estado = 0;
+                                    }
+                                    //else if (nuevo_lexema == "INT" || nuevo_lexema == "DOUBLE" || nuevo_lexema == "STRING")
+                                    //{
+                                    //    tabla_tokens.Add(new Token() { Tipo = "TYPE", Lexema = nuevo_lexema, Dir = i });
+                                    //    nuevo_lexema = "";
+                                    //    j--;
+                                    //    estado = 0;
+                                    //}
+                                    else if (cft == '[')
+                                    {
+                                        j--;
+                                        estado = 0;
+                                    }
+                                    else//si no es una palabra reservada entonces se toma como identificador
+                                    {
+                                        Console.WriteLine(nuevo_lexema + "+" + cft);
+                                        tabla_tokens.Add(new Token() { Tipo = "ident", Lexema = nuevo_lexema, Dir = i });
+                                        nuevo_lexema = "";
+                                        j--;
+                                        estado = 0;
+                                    }
+                                    
+                                }
+                                
+                                
+                            }
+                            break;
+                        case 4://símbolos +, -, *, /
+                            break;
+                        case 5://cuando tiene " es un string
+                            if(cft == '"')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "STRING", Lexema = nuevo_lexema, Dir = i });
+                                nuevo_lexema = "";
+                                estado = 0;
+                            }
+                            else
+                            {
+                                nuevo_lexema += cft;
+                                estado = 5;
+                            }
+                            break;
+                        case -1://caracter no aceptado, error
+                            nuevo_lexema += cft;
+                            lista_errores.Add("Error en fila "+i+". Caracter no aceptado: "+nuevo_lexema);
+                            nuevo_lexema = "";
+                            break;
+                    }//switch estado
+                }//for j char por char
+                
+                
+            }//for i linea por linea CFT
+
+            foreach(var token in tabla_tokens)
+            {
+                Console.WriteLine(token.ToString());
+            }
+            Console.WriteLine();
+            foreach(var token in tabla_tokens)
+            {
+                Console.Write("<" + token.Tipo + ">");
+            }
+            Console.WriteLine();
+            foreach(var error in lista_errores)
+            {
+                Console.WriteLine(error);
+            }
+
             //Aquí empieza analizador semántico que revisará el orden de los tokens, si no es correcto imprime error y el programa no continuará
 
-            //Si todo está correcto los tokens se convierten en lenguaje ensamblador y se crea el archivo ASE
+            //Si todo está correcto los tokens se convierten en lenguaje ensamblador y se crea el archivo STN
 
             string path = @"C:/Users/93764/Desktop/pruebas bin/prueba texto 4 en ase.ASE";//La ruta cambia dependiendo de la computadora
             //ruta 1:@"C:/Users/93764/Desktop/pruebas bin/prueba texto 2 en ase.ASE"
@@ -196,7 +481,7 @@ namespace EnsambladorPrueba
             }
             
 
-            Encoding ascii = Encoding.ASCII;
+            
 
             byte[] readText = File.ReadAllBytes(path);
 
@@ -238,7 +523,7 @@ namespace EnsambladorPrueba
 
             for (var i = 0; i < lineas.Length; i++)//recorre cada línea
             {
-                var numLinea = i + 1;
+                var num_Linea = i + 1;
                 var linea = lineas[i];
 
                 var palabras_linea = linea.Split(' ');
