@@ -171,7 +171,7 @@ namespace EnsambladorPrueba
             bool encontrado = false;
             foreach(Token t in tabla_tokens)
             {
-                if(t.Lexema == lexema)
+                if(t.Lexema == lexema && t.Tipo == "ident")
                 {
                     encontrado = true;
                 }
@@ -262,11 +262,6 @@ namespace EnsambladorPrueba
                                 nuevo_lexema += cft;
                                 estado = 3;
                             }
-                            //else if(cft == '+')
-                            //{
-                            //    nuevo_lexema += cft;
-                            //    estado = 4;
-                            //}
                             else if (cft == '"')
                             {
                                 nuevo_lexema += cft;
@@ -286,7 +281,7 @@ namespace EnsambladorPrueba
                             else if(cft == '[')
                             {
                                 nuevo_lexema += cft;
-                                estado = 0;
+                                estado = 4;
                             }
                             else if (cft == ']')
                             {
@@ -294,6 +289,101 @@ namespace EnsambladorPrueba
                                 tabla_tokens.Add(new Token() { Tipo = "ARRAY", Lexema = nuevo_lexema, Dir = i });
                                 estado = 0;
                                 nuevo_lexema = "";
+                            }
+                            else if(cft == '(')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "PAR_IZQ", Lexema = nuevo_lexema, Dir = i });
+                                estado = 0;
+                                nuevo_lexema = "";
+                            }
+                            else if (cft == ')')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "PAR_DER", Lexema = nuevo_lexema, Dir = i });
+                                estado = 0;
+                                nuevo_lexema = "";
+                            }
+                            else if(cft == ':')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "DOSPUNTOS", Lexema = nuevo_lexema, Dir = i });
+                                estado = 0;
+                                nuevo_lexema = "";
+                            }
+                            else if (cft == '{')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "LLA_IZQ", Lexema = nuevo_lexema, Dir = i });
+                                estado = 0;
+                                nuevo_lexema = "";
+                            }
+                            else if (cft == '}')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "LLA_DER", Lexema = nuevo_lexema, Dir = i });
+                                estado = 0;
+                                nuevo_lexema = "";
+                            }
+                            else if(cft == '=')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "IGUAL", Lexema = nuevo_lexema, Dir = i });
+                                estado = 0;
+                                nuevo_lexema = "";
+                            }
+                            else if (cft == ',')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "COMA", Lexema = nuevo_lexema, Dir = i });
+                                estado = 0;
+                                nuevo_lexema = "";
+                            }
+                            else if(cft == '+')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "SUMA", Lexema = nuevo_lexema, Dir = i });
+                                estado = 0;
+                                nuevo_lexema = "";
+                            }
+                            else if (cft == '-')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "RESTA", Lexema = nuevo_lexema, Dir = i });
+                                estado = 0;
+                                nuevo_lexema = "";
+                            }
+                            else if (cft == '*')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "MULTIPLICACIÓN", Lexema = nuevo_lexema, Dir = i });
+                                estado = 0;
+                                nuevo_lexema = "";
+                            }
+                            else if (cft == '/')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "DIVISIÓN", Lexema = nuevo_lexema, Dir = i });
+                                estado = 0;
+                                nuevo_lexema = "";
+                            }
+                            else if (cft == '%')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "DIVISIÓN", Lexema = nuevo_lexema, Dir = i });
+                                estado = 0;
+                                nuevo_lexema = "";
+                            }
+                            else if (cft == '!')
+                            {
+                                //nuevo_lexema += cft;
+                                //tabla_tokens.Add(new Token() { Tipo = "DIFERENTE_A", Lexema = nuevo_lexema, Dir = i });
+                                //estado = 0;
+                                //nuevo_lexema = "";
+                            }
+                            else if(cft == '$')
+                            {
+                                //estado = 0;
                             }
                             else
                             {
@@ -312,18 +402,13 @@ namespace EnsambladorPrueba
                                 nuevo_lexema += cft;
                                 estado = 2;
                             }
-                            //else if(cft == ']')
-                            //{
-                            //    nuevo_lexema += cft;
-                            //    tabla_tokens.Add(new Token() { Tipo = "ARRAY_INT", Lexema = nuevo_lexema, Dir = i });
-                            //    nuevo_lexema = "";
-                            //    estado = 0;
-                            //}
                             else
                             {
                                 //nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "INT", Lexema = nuevo_lexema, Dir = i });
                                 j--;
                                 estado = 0;
+                                nuevo_lexema = "";
                             }
                             break;
                         case 2://double
@@ -336,6 +421,7 @@ namespace EnsambladorPrueba
                             {
                                 tabla_tokens.Add(new Token() { Tipo = "DOUBLE", Lexema = nuevo_lexema, Dir = i });
                                 j--;//para que se regrese a leer el caracter que no se añadió al siguiente lexema
+                                estado = 0;
                                 nuevo_lexema = "";
                             }
                             break;
@@ -344,23 +430,13 @@ namespace EnsambladorPrueba
                             {
                                 nuevo_lexema += cft;
                                 estado = 3;
-                                
-                                
-                                //else if(nuevo_lexema == "PRINT")
-                                //{
-
-                                //}
-                                //else if(nuevo_lexema == "PRINTNL")
-                                //{
-
-                                //}
-                                
                             }
                             else
                             {
                                 bool esNombre = EsNombreDeVariable(nuevo_lexema);
                                 if (esNombre)//es una variable
                                 {
+                                    Console.WriteLine("variable " + nuevo_lexema);
                                     tabla_tokens.Add(new Token() { Tipo = "variable", Lexema = nuevo_lexema, Dir = i });
                                     nuevo_lexema = "";
                                     j--;
@@ -391,13 +467,13 @@ namespace EnsambladorPrueba
                                         j--;
                                         estado = 0;
                                     }
-                                    //else if (nuevo_lexema == "INT" || nuevo_lexema == "DOUBLE" || nuevo_lexema == "STRING")
-                                    //{
-                                    //    tabla_tokens.Add(new Token() { Tipo = "TYPE", Lexema = nuevo_lexema, Dir = i });
-                                    //    nuevo_lexema = "";
-                                    //    j--;
-                                    //    estado = 0;
-                                    //}
+                                    else if (nuevo_lexema+cft == "INT " || nuevo_lexema+cft == "DOUBLE " || nuevo_lexema+cft == "STRING ")
+                                    {
+                                        tabla_tokens.Add(new Token() { Tipo = "TYPE", Lexema = nuevo_lexema, Dir = i });
+                                        nuevo_lexema = "";
+                                        j--;
+                                        estado = 0;
+                                    }
                                     else if (cft == '[')
                                     {
                                         j--;
@@ -405,7 +481,7 @@ namespace EnsambladorPrueba
                                     }
                                     else//si no es una palabra reservada entonces se toma como identificador
                                     {
-                                        Console.WriteLine(nuevo_lexema + "+" + cft);
+                                        Console.WriteLine("ident " + nuevo_lexema);
                                         tabla_tokens.Add(new Token() { Tipo = "ident", Lexema = nuevo_lexema, Dir = i });
                                         nuevo_lexema = "";
                                         j--;
@@ -417,7 +493,17 @@ namespace EnsambladorPrueba
                                 
                             }
                             break;
-                        case 4://símbolos +, -, *, /
+                        case 4://solo para subíndice de array
+                            if (Char.IsLetterOrDigit(cft))
+                            {
+                                nuevo_lexema += cft;
+                                estado = 4;
+                            }
+                            else
+                            {
+                                estado = 0;
+                                j--;
+                            }
                             break;
                         case 5://cuando tiene " es un string
                             if(cft == '"')
