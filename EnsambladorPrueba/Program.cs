@@ -376,14 +376,29 @@ namespace EnsambladorPrueba
                             }
                             else if (cft == '!')
                             {
-                                //nuevo_lexema += cft;
-                                //tabla_tokens.Add(new Token() { Tipo = "DIFERENTE_A", Lexema = nuevo_lexema, Dir = i });
-                                //estado = 0;
-                                //nuevo_lexema = "";
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "DIFERENTE_A", Lexema = nuevo_lexema, Dir = i });
+                                estado = 0;
+                                nuevo_lexema = "";
+                            }
+                            else if(cft == '>')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "MAYOR_QUE", Lexema = nuevo_lexema, Dir = i });
+                                estado = 0;
+                                nuevo_lexema = "";
+                            }
+                            else if (cft == '<')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "MENOR_QUE", Lexema = nuevo_lexema, Dir = i });
+                                estado = 0;
+                                nuevo_lexema = "";
                             }
                             else if(cft == '$')
-                            {
-                                //estado = 0;
+                            {//los comentarios se ignoran y no se guardan como token
+                                estado = 7;
+                                nuevo_lexema = "";
                             }
                             else
                             {
@@ -436,11 +451,19 @@ namespace EnsambladorPrueba
                                 bool esNombre = EsNombreDeVariable(nuevo_lexema);
                                 if (esNombre)//es una variable
                                 {
-                                    Console.WriteLine("variable " + nuevo_lexema);
-                                    tabla_tokens.Add(new Token() { Tipo = "variable", Lexema = nuevo_lexema, Dir = i });
-                                    nuevo_lexema = "";
-                                    j--;
                                     estado = 0;
+                                    if (cft == '[')//es una variable de tipo array
+                                    {
+                                        nuevo_lexema += cft;
+                                        j++;
+                                        estado = 6;
+                                    }
+                                    else//es otra variable
+                                    {
+                                        tabla_tokens.Add(new Token() { Tipo = "variable", Lexema = nuevo_lexema, Dir = i });
+                                        nuevo_lexema = "";
+                                    }
+                                    j--;
                                 }
                                 else//es una palabra reservada (instrucción o tipo) o un identificador (nueva variable)?
                                 {
@@ -479,9 +502,22 @@ namespace EnsambladorPrueba
                                         j--;
                                         estado = 0;
                                     }
+                                    else if(nuevo_lexema == "AND")
+                                    {
+                                        tabla_tokens.Add(new Token() { Tipo = "Y", Lexema = nuevo_lexema, Dir = i });
+                                        nuevo_lexema = "";
+                                        j--;
+                                        estado = 0;
+                                    }
+                                    else if (nuevo_lexema == "OR")
+                                    {
+                                        tabla_tokens.Add(new Token() { Tipo = "O", Lexema = nuevo_lexema, Dir = i });
+                                        nuevo_lexema = "";
+                                        j--;
+                                        estado = 0;
+                                    }
                                     else//si no es una palabra reservada entonces se toma como identificador
                                     {
-                                        Console.WriteLine("ident " + nuevo_lexema);
                                         tabla_tokens.Add(new Token() { Tipo = "ident", Lexema = nuevo_lexema, Dir = i });
                                         nuevo_lexema = "";
                                         j--;
@@ -519,10 +555,40 @@ namespace EnsambladorPrueba
                                 estado = 5;
                             }
                             break;
+                        case 6://solo para subindice de variable array
+                            if (Char.IsLetterOrDigit(cft))
+                            {
+                                nuevo_lexema += cft;
+                                estado = 6;
+                            }
+                            else if(cft == ']')
+                            {
+                                nuevo_lexema += cft;
+                                tabla_tokens.Add(new Token() { Tipo = "variable", Lexema = nuevo_lexema, Dir = i });
+                                nuevo_lexema = "";
+                                estado = 0;
+                            }
+                            else
+                            {
+                                estado = 0;
+                                j--;
+                            }
+                            break;
+                        case 7://comentarios $$
+                            if(cft != '$')
+                            {
+                                estado = 7;
+                            }
+                            else
+                            {
+                                estado = 0;
+                            }
+                            break;
                         case -1://caracter no aceptado, error
                             nuevo_lexema += cft;
                             lista_errores.Add("Error en fila "+i+". Caracter no aceptado: "+nuevo_lexema);
                             nuevo_lexema = "";
+                            estado = 0;
                             break;
                     }//switch estado
                 }//for j char por char
@@ -530,17 +596,23 @@ namespace EnsambladorPrueba
                 
             }//for i linea por linea CFT
 
-            foreach(var token in tabla_tokens)
+            foreach(var token in tabla_tokens)//imprime información de tokens
             {
                 Console.WriteLine(token.ToString());
             }
             Console.WriteLine();
-            foreach(var token in tabla_tokens)
+            int num_linea_cft = 0;
+            foreach(var token in tabla_tokens)//imprime tokens de analizador léxico
             {
+                if(token.Dir > num_linea_cft)
+                {
+                    Console.WriteLine();
+                    num_linea_cft = token.Dir;
+                }
                 Console.Write("<" + token.Tipo + ">");
             }
             Console.WriteLine();
-            foreach(var error in lista_errores)
+            foreach(var error in lista_errores)//imprime errores encontrados en analizador léxico
             {
                 Console.WriteLine(error);
             }
