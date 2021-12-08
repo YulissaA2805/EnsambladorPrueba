@@ -159,6 +159,8 @@ namespace EnsambladorPrueba
 
         private static List<string> lista_errores = new List<string>();
 
+        private static List<string> lista_errores_syntax = new List<string>();
+
         private static Dictionary<string, int> variables = new Dictionary<string, int>();
 
         private static Dictionary<string, int> etiquetas_def = new Dictionary<string, int>();//nombre etiqueta, dir
@@ -182,16 +184,16 @@ namespace EnsambladorPrueba
         static void Main(string[] args)
         {
             //Aquí empieza Compilador
-            string path0 = @"C:/Users/93764/Desktop/pruebas bin/cflat test 1.txt";//La ruta cambia dependiendo de la computadora
+            string path0 = @"C:/Users/ludmi/Compiladores/cflat-test-1.txt";//La ruta cambia dependiendo de la computadora
             //ruta 1: @"C:/Users/93764/Desktop/pruebas bin/cflat test 1.txt"
-            //ruta 2:
+            //ruta 2: @"C:/Users/ludmi/Compiladores/cflat-test-1.txt"
             //ruta 3:
 
             byte[] readTXT = File.ReadAllBytes(path0);
             //para crear el archivo (txt a CFT)
             try
             {
-                File.WriteAllBytes("C:/Users/93764/Desktop/pruebas bin/cflat test 1 en CFT.CFT", readTXT);
+                File.WriteAllBytes("C:/Users/ludmi/Compiladores/cflat test 1 en CFT.CFT", readTXT);
                 Console.WriteLine("\n Archivo .CFT creado con éxito.");
             }
             catch (IOException e)
@@ -202,9 +204,9 @@ namespace EnsambladorPrueba
 
             //Aquí empieza analizador léxico que va a crear los tokens
 
-            byte[] readCFT = File.ReadAllBytes("C:/Users/93764/Desktop/pruebas bin/cflat test 1 en CFT.CFT");
+            byte[] readCFT = File.ReadAllBytes("C:/Users/ludmi/Compiladores/cflat test 1 en CFT.CFT");
             //ruta 1:"C:/Users/93764/Desktop/pruebas bin/cflat test 1 en CFT.CFT"
-            //ruta 2:
+            //ruta 2:"C:/Users/ludmi/Compiladores/cflat test 1 en CFT.CFT"
             //ruta 3:
 
             Encoding ascii = Encoding.ASCII;
@@ -619,12 +621,27 @@ namespace EnsambladorPrueba
 
             //Aquí empieza analizador semántico que revisará el orden de los tokens, si no es correcto imprime error y el programa no continuará
 
+            int x = 0;
+            if(tabla_tokens[x].Tipo == "START")
+            {
+                Instructions(ref x, tabla_tokens.Count);
+            }
+            else
+            {
+                lista_errores_syntax.Add("Error en fila " + tabla_tokens[x].Dir + ". " + tabla_tokens[0].Tipo);
+            }
+
+            foreach (var error in lista_errores_syntax)//imprime errores encontrados en analizador semántico
+            {
+                Console.WriteLine(error);
+            }
+
             //Si todo está correcto los tokens se convierten en lenguaje ensamblador y se crea el archivo STN
 
-            string path = @"C:/Users/93764/Desktop/pruebas bin/prueba texto 4 en ase.ASE";//La ruta cambia dependiendo de la computadora
+            string path = @"C:/Users/ludmi/Compiladores/prueba-texto-4-en-ase.ASE";//La ruta cambia dependiendo de la computadora
             //ruta 1:@"C:/Users/93764/Desktop/pruebas bin/prueba texto 2 en ase.ASE"
             //ruta 2:@"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/prueba texto 2 en ase.ASE"
-            //ruta 3:@"C:/Users/ludmi/Downloads/prueba-texto-2-en-ase.ASE"
+            //ruta 3:@"C:/Users/ludmi/Compiladores/prueba-texto-4-en-ase.ASE"
 
             string result = Path.GetFileName(path);
             if(Path.GetExtension(path) != ".ASE")
@@ -665,10 +682,10 @@ namespace EnsambladorPrueba
 
             BinaryWriter bw;
 
-            bw = new BinaryWriter(new FileStream("C:/Users/93764/Desktop/pruebas bin/probando stn 4.STN", FileMode.Create));
+            bw = new BinaryWriter(new FileStream("C:/Users/ludmi/Compiladores/probando stn 4.STN", FileMode.Create));
             //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stn.STN"
             //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN"
-            //ruta destino 3:"C:/Users/ludmi/Downloads/probando stn.STN"
+            //ruta destino 3:"C:/Users/ludmi/Compiladores/probando stn 4.STN"
 
             string magic_number = "ICCSTN      ";//los espacios son para dejar vacíos por ahora los segmentos y el vector string
             tam_seg_cod += 12;
@@ -1186,10 +1203,10 @@ namespace EnsambladorPrueba
 
             bw.Close();
 
-            string path2 = "C:/Users/93764/Desktop/pruebas bin/probando stn 4.STN";
+            string path2 = "C:/Users/ludmi/Compiladores/probando stn 4.STN";
             //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stn.STN"
             //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stn.STN"
-            //ruta destino 3:"C:/Users/ludmi/Downloads/probando stn.STN"
+            //ruta destino 3:"C:/Users/ludmi/Compiladores/probando stn 4.STN"
             byte[] readText2 = File.ReadAllBytes(path2);
             //string a2 = ascii.GetString(readText2);
             //Console.WriteLine("Contenido del archivo STN:\n" + a2);
@@ -1350,10 +1367,10 @@ namespace EnsambladorPrueba
                     acum += VS;
                 }
             }
-            string path3 = "C:/Users/93764/Desktop/pruebas bin/probando stnv 4.STNV";
+            string path3 = "C:/Users/ludmi/Compiladores/probando stnv 4.STNV";
             //ruta destino 1:"C:/Users/93764/Desktop/pruebas bin/probando stnv.STNV"
             //ruta destino 2:"D:/OneDrive - Instituto Educativo del Noroeste, A.C/Docs/CETYS/Universidad/7mo/Compiladores/Programas/ensamblador/probando stnv.STNV"
-            //ruta destino 3:"C:/Users/ludmi/Downloads/probando stnv.STNV"
+            //ruta destino 3:"C:/Users/ludmi/Compiladores/probando stnv 4.STNV"
             File.WriteAllText(path3, acum);
             Console.WriteLine("");
 
@@ -2482,5 +2499,322 @@ namespace EnsambladorPrueba
             }//for
 
         }//static void main
+
+        public static bool Instructions(ref int pos, int length)
+        {
+            
+            pos++;
+            int posTemp = pos;
+
+            if (pos == length - 1)
+            {
+                return true;
+            }
+
+            switch (tabla_tokens[pos].Tipo)
+            {
+                //Declaración de variables
+                case "ARRAY":
+                case "TYPE":
+                    pos++;
+                    if(tabla_tokens[pos].Tipo != "ident")
+                    {
+                        lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                    }
+
+                    posTemp = pos;
+                    if(!instructionsCiclos("CI", ref pos, length))
+                    { 
+                        pos = posTemp;
+                        pos++;
+                        if (tabla_tokens[pos].Tipo != "DELIMITADOR")
+                        {
+                            lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                        }
+                    }
+
+                    
+                        break;
+                    //asignar valor y operaciones
+                case "variable":
+                    pos++;
+                    if (tabla_tokens[pos].Tipo != "IGUAL")
+                    {
+                        lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                    }
+
+                    posTemp = pos;
+                    if(!instructionsCiclos("OPERANDOS", ref pos, length)) 
+                    {
+                        pos = posTemp;
+                        if (!instructionsCiclos("OPERACION", ref pos, length))
+                        {
+                            lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                        }
+                    }
+
+                    pos++;
+                    if (tabla_tokens[pos].Tipo != "DELIMITADOR")
+                    {
+                        lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                    }
+                    break;
+                case "INSTRUCTION":
+                    posTemp = pos;
+                    pos++;
+                    if (tabla_tokens[pos].Tipo == "PAR_IZQ")
+                    {
+                        posTemp = pos;
+                        //IF/WHILE
+                        if (instructionsCiclos("COND", ref pos, length))
+                        {
+                            instructionsCiclos("PARLLA", ref pos, length);
+                        }
+                        //FOR
+                        else 
+                        {
+                            pos = posTemp;
+                            pos++;
+                            if (tabla_tokens[pos].Tipo == "variable")
+                            {
+                                pos++;
+                                if (tabla_tokens[pos].Tipo == "DOSPUNTOS")
+                                {
+                                    pos++;
+                                    if (tabla_tokens[pos].Tipo == "variable" || tabla_tokens[pos].Tipo == "INT")
+                                    {
+                                        instructionsCiclos("PARLLA", ref pos, length);
+                                    }
+                                    else
+                                    {
+                                        lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                                    }
+                                }
+                                else
+                                {
+                                    lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                                }
+                            }
+                            else
+                            {
+                                lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                            }
+                        }
+                        
+                    }
+                    else 
+                    {
+                        //PRINT/PRINTNL/READ
+                        pos = posTemp;
+                        pos++;
+                        if (tabla_tokens[pos].Tipo == "variable" || tabla_tokens[pos].Tipo == "STRING")
+                        {
+                            instructionsCiclos("CVS", ref pos, length);
+
+                            pos++;
+                            if (tabla_tokens[pos].Tipo != "DELIMITADOR")
+                            {
+                                lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                            }
+                        }
+                        else
+                        {
+                            pos = posTemp;
+                            pos++;
+                            if (tabla_tokens[pos].Tipo != "DELIMITADOR")
+                            {
+                                lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                            }
+                            
+                        }
+                    }
+                    break;
+                case "LLA_DER":
+                    return true;
+                    break;
+                case "END":
+                    return true;
+                    break;
+            }
+
+                return Instructions(ref pos, length); ;
+        }
+
+        public static bool instructionsCiclos(string gram, ref int pos, int length)
+        {
+            int postTemp = 0;
+            switch (gram)
+            {
+                case "CI":
+                    pos++;
+                    if(tabla_tokens[pos].Tipo == "COMA")
+                    {
+                        pos++;
+                        if (tabla_tokens[pos].Tipo == "ident")
+                        {
+                            instructionsCiclos("CI", ref pos, length);
+                        }
+                        else
+                        {
+                            lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                        }
+                    }
+                    break;
+                case "OPERACION":
+                    postTemp = pos;
+                    if(instructionsCiclos("OPERANDO", ref pos, length))
+                    {
+                        instructionsCiclos("OP", ref pos, length);
+                    }
+                    else 
+                    {
+                        pos = postTemp;
+                        pos++;
+                        if (tabla_tokens[pos].Tipo == "PAR_IZQ")
+                        {
+                            if (instructionsCiclos("OPERACION", ref pos, length))
+                            {
+                                pos++;
+                                if (tabla_tokens[pos].Tipo == "PAR_DER")
+                                {
+                                    instructionsCiclos("OP", ref pos, length);
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case "OP":
+                    postTemp = pos;
+                    if (instructionsCiclos("OPERADOR", ref pos, length))
+                    {
+                        instructionsCiclos("OPERACION", ref pos, length);
+                    }
+                    else
+                    {
+                        pos = postTemp;
+                    }
+                    break;
+                case "OPERANDO":
+                    pos++;
+                    if(tabla_tokens[pos].Tipo == "variable" || tabla_tokens[pos].Tipo == "INT" || tabla_tokens[pos].Tipo == "DOUBLE")
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                        break;
+                    //Extension de OPERANDO, se permite unir cadenas de string
+                case "OPERANDOS":
+                    if (instructionsCiclos("OPERANDO", ref pos, length) || tabla_tokens[pos].Tipo == "STRING")
+                    {
+                        pos++;
+                        if (tabla_tokens[pos].Tipo == "SUMA")
+                        {
+                            postTemp = pos;
+                            if(!instructionsCiclos("OPERANDOS", ref pos, length))
+                            {
+                                pos = postTemp;
+                                if (!instructionsCiclos("OPERACION", ref pos, length))
+                                {
+                                    lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    break;
+                case "OPERADOR":
+                    pos++;
+                    if (tabla_tokens[pos].Tipo == "SUMA" || tabla_tokens[pos].Tipo == "RESTA" || tabla_tokens[pos].Tipo == "MULTIPLICACION" || tabla_tokens[pos].Tipo == "DIVISION")
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    break;
+                    //COMA, VARIABLE/STRING (PRINT y READ)
+                case "CVS":
+                    postTemp = pos;
+                    pos++;
+                    if (tabla_tokens[pos].Tipo == "COMA")
+                    {
+                        pos++;
+                        if (tabla_tokens[pos].Tipo == "STRING" || tabla_tokens[pos].Tipo == "variable")
+                        {
+                            instructionsCiclos("CVS", ref pos, length);
+                        }
+                        else
+                        {
+                            lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                        }
+                    }
+                    else
+                    {
+                        pos = postTemp;
+                    }
+                    break;
+                    //CONDICION (<, >, =, !)
+                case "COND":
+                    if(instructionsCiclos("OPERANDO", ref pos, length))
+                    {
+                        pos++;
+                        if (tabla_tokens[pos].Tipo == "IGUAL" || tabla_tokens[pos].Tipo == "DIFERENTE_A" || tabla_tokens[pos].Tipo == "MAYOR_QUE" || tabla_tokens[pos].Tipo == "MENOR_QUE")
+                        {
+                            instructionsCiclos("OPERANDO", ref pos, length);
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                    }
+                    break;
+                    //AND y OR
+                case "AO":
+                    pos++;
+                    if (tabla_tokens[pos].Tipo == "A" || tabla_tokens[pos].Tipo == "O")
+                    {
+                        instructionsCiclos("COND", ref pos, length);
+                    }
+                        break;
+                    //Parentesis y llaves (FOR y WHILE)
+                case "PARLLA":
+                    pos++;
+                    if (tabla_tokens[pos].Tipo == "PAR_DER")
+                    {
+                        pos++;
+                        if (tabla_tokens[pos].Tipo == "LLA_IZQ")
+                        {
+                            Instructions(ref pos, length);
+
+                            if (tabla_tokens[pos].Tipo != "LLA_DER")
+                            {
+                                lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                            }
+                        }
+                        else
+                        {
+                            lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                        }
+                    }
+                    else
+                    {
+                        lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                    }
+                    break;
+            }
+
+            return true;
+        }
     }//Program
 }//EnsambladorPrueba
