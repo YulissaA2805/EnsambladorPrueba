@@ -2506,7 +2506,7 @@ namespace EnsambladorPrueba
             pos++;
             int posTemp = pos;
 
-            if (pos == length - 1)
+            if (pos >= length - 1)
             {
                 return true;
             }
@@ -2630,11 +2630,14 @@ namespace EnsambladorPrueba
                     }
                     break;
                 case "LLA_DER":
-                    return true;
+                    return false;
                     break;
                 case "END":
                     return true;
                     break;
+                default:
+                    lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
+                break;
             }
 
                 return Instructions(ref pos, length); ;
@@ -2795,9 +2798,7 @@ namespace EnsambladorPrueba
                         pos++;
                         if (tabla_tokens[pos].Tipo == "LLA_IZQ")
                         {
-                            Instructions(ref pos, length);
-
-                            if (tabla_tokens[pos].Tipo != "LLA_DER")
+                            if(Instructions(ref pos, length))
                             {
                                 lista_errores_syntax.Add("Error en fila " + tabla_tokens[pos].Dir + ". " + tabla_tokens[pos].Tipo);
                             }
